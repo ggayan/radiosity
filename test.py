@@ -7,6 +7,9 @@ import math
 import random
 import time
 
+from patch import *
+from punto import *
+
 windowId = -1
 ESCAPE = '\033'
 
@@ -130,6 +133,17 @@ def scenario():
     glVertex3f(  size+xo, -size+yo, -size +zo +size)
     
     glEnd()
+    glColor(0.3,0.3,0.3)
+    p1 = Punto(0,0,0)
+    p2 = Punto(1,1,1)
+    p3 = Punto(1,1,-1)
+    p = Patch(p1,p2,p3)
+    glBegin(GL_TRIANGLES)
+    glVertex3f(p.p1.x,p.p1.y,p.p1.z)
+    glVertex3f(p.p2.x,p.p2.y,p.p2.z)
+    glVertex3f(p.p3.x,p.p3.y,p.p3.z)
+    glEnd()
+    
     glPopMatrix()
 
 def axis():
