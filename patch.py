@@ -26,3 +26,11 @@ class Patch:
         b_menos_a = self.p2.resta(self.p1, 1) # == (p2 - p1) / 1
         c_menos_a = self.p3.resta(self.p1, 1) # == (p3 - p1) / 1
         return b_menos_a.cruz(c_menos_a)
+    
+    def area(self):
+        lado1 = math.sqrt(math.pow(p1.x-p2.x,2)+math.pow(p1.y-p2.y,2)+math.pow(p1.z-p2.z,2)) #p1, p2
+        lado2 = math.sqrt(math.pow(p3.x-p2.x,2)+math.pow(p3.y-p2.y,2)+math.pow(p3.z-p2.z,2)) #p2, p3
+        lado3 = math.sqrt(math.pow(p1.x-p3.x,2)+math.pow(p1.y-p3.y,2)+math.pow(p1.z-p3.z,2)) #p3, p1
+        s = 0.5*(lado1 + lado2 + lado3)
+        
+        return math.sqrt(s*(s-lado1)*(s-lado2)*(s-lado3))
