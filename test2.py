@@ -9,15 +9,31 @@ from patch import *
 from punto import *
 
 windowId = -1
-X = 0
-Y = 0
-Z = 2
+
+#parametros del punto de vista
+
+#el punto desde el cual miro
+VIEWPOINT_X = 0
+VIEWPOINT_Y = 0
+VIEWPOINT_Z = 2
+
+#el punto al cual miro
+LOOK_AT_X = 0
+LOOK_AT_Y = 0
+LOOK_AT_Z = 0
+
+#el vector que indica hacia donde es 'arriba' para la camara
+UP_VECTOR_X = 0
+UP_VECTOR_Y = 1
+UP_VECTOR_Z = 0
+
+#resolucion de la ventana
 WIDTH = 800
 HEIGHT = 600
 
 #variables de las esferas
-MINSECTIONS = 20 #secciones triangulares minimas para representar cada 
-SECTIONS = MINSECTIONS #number of triangles to use to estimate a circle
+MINSECTIONS = 20 #secciones triangulares minimas para representar cada fila de un plano
+SECTIONS = MINSECTIONS #numero de triangulos por fila de un plano
 
 # Configuramos OpenGL
 def InitGL(width, height):              
@@ -51,24 +67,25 @@ def ReSizeGLScene(width, height):
 
 # Lo que se dibujar'a
 def DrawGLScene():
-    global X
-    global Y
-    global Z
     
     # Limpiamos los buffers de la iteracion anterior
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     
-    gluLookAt(X, Y, Z,
-              0.0, 0.0, 0.0,
-              0.0, 1.0, 0.0)
+    gluLookAt(VIEWPOINT_X, VIEWPOINT_Y, VIEWPOINT_Z,
+              LOOK_AT_X, LOOK_AT_Y, LOOK_AT_Z,
+              UP_VECTOR_X, UP_VECTOR_Y, UP_VECTOR_Z)
+    
+    #dibujo los ejes
     axis()
+    
+    #dibujo el escenario
     scenario()
 
     #  Intercambiamos los buffers. Ahora lo visible es lo que acabamos de dibujar.
     glutSwapBuffers()
     
-def scenario():
+def scenario(): #dibujar los planos
     #el origen de cada plano
     size = 1
     glColor(0.5, 0, 0)
@@ -110,11 +127,10 @@ def axis():
     glVertex3f(0, 0, -1)
     glEnd()
 
-#Presionar una tecla
-def keyPressed(*args):
-    global X
-    global Y
-    global Z
+def keyPressed(*args): #Presionar una tecla
+    global VIEWPOINT_X
+    global VIEWPOINT_Y
+    global VIEWPOINT_Z
     global SECTIONS
     global MINSECTIONS
     
@@ -129,33 +145,28 @@ def keyPressed(*args):
     if key == '\153' and SECTIONS > MINSECTIONS: #k
         SECTIONS-= 1 #decremento el detalle
     if key == '\161': #q
-        X = X + 0.2
-        print "X =", X
+        VIEWPOINT_X = VIEWPOINT_X + 0.2
+        print "VIEWPOINT_X =", VIEWPOINT_X
     if key == '\141': #a
-        X = X - 0.2
-        print "X =", X
+        VIEWPOINT_X = VIEWPOINT_X - 0.2
+        print "VIEWPOINT_X =", VIEWPOINT_X
     #(W,S) = camara en Y
     if key == '\167': #w
-        Y = Y + 0.2
-        print "Y =",Y
+        VIEWPOINT_Y = VIEWPOINT_Y + 0.2
+        print "VIEWPOINT_Y =", VIEWPOINT_Y
     if key == '\163': #s
-        Y = Y - 0.2
-        print "Y =",Y
+        VIEWPOINT_Y = VIEWPOINT_Y - 0.2
+        print "VIEWPOINT_Y =", VIEWPOINT_Y
     #(E,D) = camara en Z
     if key == '\145': #e
-        Z = Z + 0.2
-        print "Z =",Z
+        VIEWPOINT_Z = VIEWPOINT_Z + 0.2
+        print "VIEWPOINT_Z =", VIEWPOINT_Z
     if key == '\144': #d
-        Z = Z - 0.2
-        print "Z =",Z
-        
-    
+        VIEWPOINT_Z = VIEWPOINT_Z - 0.2
+        print "VIEWPOINT_Z =", VIEWPOINT_Z
 
-# Nuestra funcion principal
-def main():
+def main(): #Nuestra funcion principal
     global windowId
-    global WIDTH
-    global HEIGHT
     
     # Configurar OpenGL
     glutInit(())
