@@ -9,6 +9,7 @@ import random
 
 from patch import *
 from punto import *
+from functions import *
 
 windowId = -1
 
@@ -101,6 +102,7 @@ def DrawGLScene():
     
     #dibujo el escenario
     escenario()
+    print formfactor(patchesList[0],patchesList[1])
 
     #  Intercambiamos los buffers. Ahora lo visible es lo que acabamos de dibujar.
     glutSwapBuffers()
