@@ -14,6 +14,8 @@ def formfactor(p_i,p_j):
     
     H_ij = 1  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
     r = math.sqrt(math.pow(c_i.x-c_j.x,2)+math.pow(c_i.y-c_j.y,2)+math.pow(c_i.z-c_j.z,2)) #centro p_i, p_j
+    if r==0:
+        return 1
     dAj = area(p_j)
     #cosenos segun http://www.geoan.com/vectores/angulo.html
     costi = (d_ij.x*n_i.x + d_ij.y*n_i.y + d_ij.z*n_i.z)/((math.sqrt(d_ij.x*d_ij.x + d_ij.y*d_ij.y + d_ij.z*d_ij.z))*(math.sqrt(n_i.x*n_i.x+n_i.y*n_i.y+n_i.z*n_i.z)))
@@ -22,4 +24,10 @@ def formfactor(p_i,p_j):
     # F_ij = 
     return ((costi*costj)/(math.pi*math.pow(r,2)))*H_ij*dAj
     
-def sistema(A,b):
+def sistema(a,b):
+    #a = array([[3,1], [1,2]])
+    #b = array([9,8])
+    x = linalg.solve(a, b)
+    #print x
+    return x
+
