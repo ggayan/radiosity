@@ -202,19 +202,20 @@ def generarListaDeParches():
         patchesList.extend(planoYZ[i])
         
     dataMatrix = zeros( (len(patchesList),len(patchesList)) )
-    emsVector = zeros(len(patchesList)
-    for p in range(0,len(patchesList)-1)
-        for q in range(0,len(patchesList)-1)
+    emsVector = zeros(len(patchesList))
+    for p in range(0,len(patchesList)-1):
+        for q in range(0,len(patchesList)-1):
             p1 = patchesList[p]
             p2 = patchesList[q]
             ff = formfactor(p1,p2)
             rho = p1.r
             if p==q:
                 dataMatrix[p,q] = 1-rho*ff
-            else
+            else:
                 dataMatrix[p,q] = -rho*ff
             emsVector[p] = p1.e
     BVector = sistema(dataMatrix,emsVector)
+    print BVector 
 
 def dibujarListaParches():
     for i in range(0, len(patchesList)):
