@@ -7,8 +7,12 @@ class Patch:
     #x = 0
     #y = 0
     #z = 0
-    r = 0.8  # reflectividad
-    e = 0  # emisividad
+    rr = 0.8  # reflectividad roja
+    er = 0  # emisividad roja
+    rv = 0.3  # reflectividad verde
+    ev = 0  # emisividad verde
+    rb = 0.3  # reflectividad azul
+    eb = 0  # emisividad azul
 
     def __init__(self,p1,p2,p3):
         self.p1 = p1
