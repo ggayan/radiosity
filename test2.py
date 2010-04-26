@@ -5,6 +5,7 @@ from numpy import *
 import time
 import sys
 import math
+import random
 
 from patch import *
 from punto import *
@@ -14,9 +15,9 @@ windowId = -1
 #parametros del punto de vista
 
 #el punto desde el cual miro
-VIEWPOINT_X = 0
-VIEWPOINT_Y = 0
-VIEWPOINT_Z = 2
+VIEWPOINT_X = 1.2
+VIEWPOINT_Y = 0.8
+VIEWPOINT_Z = 1.6
 
 #el punto al cual miro
 LOOK_AT_X = 0
@@ -33,7 +34,7 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 8 #numero de triangulos por columna de un plano
+SECTIONS = 16 #numero de triangulos por columna de un plano
 
 #las filas tienen la mitad de secciones
 
@@ -94,60 +95,37 @@ def DrawGLScene():
     axis()
     
     #dibujo el escenario
-    scenario2()
+    escenario()
 
     #  Intercambiamos los buffers. Ahora lo visible es lo que acabamos de dibujar.
     glutSwapBuffers()
     
-def scenario(): #dibujar los planos
-    #el origen de cada plano
-    size = 1
-    glColor(0.5, 0, 0)
-    
-    glBegin(GL_QUADS)
-    
-    #plano XY, dentro de la pantalla
-    glVertex3f(0, 0, -size)
-    glVertex3f(size, 0, -size)
-    glVertex3f(size, size, -size)
-    glVertex3f(0, 0 + size, -size)
-    
-    glColor(0, 0.5, 0)
-    #plano YZ, dentro de la pantalla
-    glVertex3f(0, 0, 0)
-    glVertex3f(0, size, 0)
-    glVertex3f(0, size, -size)
-    glVertex3f(0, 0, -size)
-    
-    glColor(0, 0, 0.5)
-    #plano XZ
-    glVertex3f(0, 0, 0)
-    glVertex3f(size, 0, 0)
-    glVertex3f(size, 0, -size)
-    glVertex3f(0, 0, -size)
-    
-    glEnd()
-    
-def scenario2():
+#las figuras a dibujar
+def escenario():
     glBegin(GL_TRIANGLES)
     glColor(0.5, 0, 0)
     dibujarPlano(planoXY)
-    #glColor(0, 0.5, 0)
-    #dibujarYZ()
-    #glColor(0, 0, 0.5)
-    #dibujarXZ()
+    glColor(0, 0.5, 0)
+    dibujarPlano(planoXZ)
+    glColor(0, 0, 0.5)
+    dibujarPlano(planoYZ)
     glEnd()
     
 #funcion que genera los planos a dibujar
 def generarPlanos():
     global planoXY
+    global planoXZ
+    global planoYZ
+    
     size = 1.0
     step = size / SECTIONS
     
+    #planoXY
     x0 = 0
     y0 = 0
-    for i in range(0,SECTIONS / 2): #eje horizonal
-        for j in range(0,SECTIONS): #eje vertical
+    
+    for i in range(0, SECTIONS / 2): #eje horizonal
+        for j in range(0, SECTIONS): #eje vertical
             if j % 2 == 0: #pares
                 p1 = Punto(x0, y0, 0)
                 p2 = Punto(x0, y0 + step, 0)
@@ -163,9 +141,51 @@ def generarPlanos():
         x0 += step
         y0 = 0
     
+    #planoXZ
+    x0 = 0
+    z0 = 0
+    
+    for i in range(0, SECTIONS / 2): #eje horizonal
+        for j in range(0, SECTIONS): #eje vertical
+            if j % 2 == 0: #pares
+                p1 = Punto(x0, 0, z0)
+                p2 = Punto(x0, 0, z0 + step)
+                p3 = Punto(x0 + step, 0, z0)
+                planoXZ[i][j] = Patch(p1, p2, p3)
+            else:
+                #segundo triangulo
+                p1 = Punto(x0, 0, z0 + step)
+                p2 = Punto(x0 + step, 0, z0 + step)
+                p3 = Punto(x0 + step, 0, z0)
+                planoXZ[i][j] = Patch(p1, p2, p3)
+                z0 += step
+        x0 += step
+        z0 = 0
+        
+    #planoYZ
+    y0 = 0
+    z0 = 0
+    
+    for i in range(0, SECTIONS / 2): #eje horizonal
+        for j in range(0, SECTIONS): #eje vertical
+            if j % 2 == 0: #pares
+                p1 = Punto(0, y0, z0)
+                p2 = Punto(0, y0 + step, z0)
+                p3 = Punto(0, y0, z0 + step)
+                planoYZ[i][j] = Patch(p1, p2, p3)
+            else:
+                #segundo triangulo
+                p1 = Punto(0, y0 + step, z0)
+                p2 = Punto(0, y0 + step, z0 + step)
+                p3 = Punto(0, y0, z0 + step)
+                planoYZ[i][j] = Patch(p1, p2, p3)
+                y0 += step
+        z0 += step
+        y0 = 0
+    
 def dibujarPlano(plano):
-    for i in range(0,SECTIONS / 2): #filas
-        for j in range(0,SECTIONS): #columnas
+    for i in range(0, SECTIONS / 2): #filas
+        for j in range(0, SECTIONS): #columnas
             plano[i][j].dibujar()
     
     
@@ -248,3 +268,4 @@ def main(): #Nuestra funcion principal
 
 print "Hit ESC key to quit."
 main()
+
