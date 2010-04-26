@@ -33,14 +33,14 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 4 #numero de triangulos por columna de un plano
+SECTIONS = 8 #numero de triangulos por columna de un plano
 
 #las filas tienen la mitad de secciones
 
 #planos, son arreglos dobles
-planoXY = [ [0] * SECTIONS ] * (SECTIONS / 2)
-planoYZ = [ [0] * SECTIONS ] * (SECTIONS / 2)
-planoXZ = [ [0] * SECTIONS ] * (SECTIONS / 2)
+planoXY = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
+planoYZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
+planoXZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 
 #limites de los planos
 
@@ -142,8 +142,7 @@ def scenario2():
 def generarPlanos():
     global planoXY
     size = 1.0
-    small_step = size / SECTIONS
-    big_step = 2 * size / SECTIONS
+    step = size / SECTIONS
     
     x0 = 0
     y0 = 0
@@ -151,17 +150,18 @@ def generarPlanos():
         for j in range(0,SECTIONS): #eje vertical
             if j % 2 == 0: #pares
                 p1 = Punto(x0, y0, 0)
-                p2 = Punto(x0, y0 + small_step, 0)
-                p3 = Punto(x0 + small_step, y0, 0)
+                p2 = Punto(x0, y0 + step, 0)
+                p3 = Punto(x0 + step, y0, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
-                p1 = Punto(x0 + small_step, y0 + small_step, 0)
-                p2 = Punto(x0 + small_step, y0, 0)
-                p3 = Punto(x0 , y0, 0)
+                p1 = Punto(x0, y0 + step, 0)
+                p2 = Punto(x0 + step, y0 + step, 0)
+                p3 = Punto(x0 + step, y0, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
-                y0 += small_step
-        x0 += big_step
+                y0 += step
+        x0 += step
+        y0 = 0
     
 def dibujarPlano(plano):
     for i in range(0,SECTIONS / 2): #filas
