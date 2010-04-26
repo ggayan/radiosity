@@ -57,6 +57,7 @@ def InitGL(width, height):
     glDepthFunc(GL_LESS)                # The Type Of Depth Test To Do
     glEnable(GL_DEPTH_TEST)             # Enables Depth Testing
     glShadeModel(GL_SMOOTH)             # Enables Smooth Color Shading
+    glDisable(GL_CULL_FACE)
     
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()                    # Reset The Projection Matrix
@@ -141,7 +142,8 @@ def scenario2():
 def generarPlanos():
     global planoXY
     size = 1.0
-    step = size / SECTIONS
+    small_step = size / SECTIONS
+    big_step = 2 * size / SECTIONS
     
     x0 = 0
     y0 = 0
@@ -149,23 +151,17 @@ def generarPlanos():
         for j in range(0,SECTIONS): #eje vertical
             if j % 2 == 0: #pares
                 p1 = Punto(x0, y0, 0)
-                p2 = Punto(x0, y0 + step, 0)
-                p3 = Punto(x0 + step, y0, 0)
+                p2 = Punto(x0, y0 + small_step, 0)
+                p3 = Punto(x0 + small_step, y0, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
-                p1 = Punto(x0, y0 + step, 0)
-                p2 = Punto(x0 + step, y0 + step, 0)
-                p3 = Punto(x0 + step, y0, 0)
+                p1 = Punto(x0 + small_step, y0 + small_step, 0)
+                p2 = Punto(x0 + small_step, y0, 0)
+                p3 = Punto(x0 , y0, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
-                y0 += step
-            print "i: ", i
-            print "j: ", j
-            planoXY[i][j].p1.imprimir("p1")
-            planoXY[i][j].p2.imprimir("p2")
-            planoXY[i][j].p3.imprimir("p3")
-            print "#######"
-        x0 += step
+                y0 += small_step
+        x0 += big_step
     
 def dibujarPlano(plano):
     for i in range(0,SECTIONS / 2): #filas
