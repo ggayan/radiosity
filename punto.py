@@ -32,3 +32,10 @@ class Punto:
         z = self.x * p2.y - self.y * p2.x
         #y lo retornamos como punto
         return Punto(x, y, z)
+    
+    def imprimir(self, name):
+        x = self.x
+        y = self.y
+        z = self.z
+        
+        print name + ": x = {0}, y = {1}, z = {2}".format(x, y, z)
