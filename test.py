@@ -157,7 +157,7 @@ def axis():
     glVertex3f(0, -2, 0)
     glColor(0, 0, 1) #azul = Z
     glVertex3f(0,0,0)
-    p = cruz(Punto(2,0,0),Punto(0,2,0))
+    p = Punto(2,0,0).cruz(Punto(0,2,0))
     glVertex3f(p.x,p.y,p.z)
     #glVertex4f(0,0,4+4,math.sqrt(8*8))  #calculo de normal
     #glVertex3f(0, 0, 2)
