@@ -43,6 +43,9 @@ planoXY = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 planoYZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 planoXZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 
+#lista completa de los parches
+patchesList = []
+
 #limites de los planos
 
 
@@ -51,6 +54,8 @@ def InitGL(width, height):
     
     #llamo la funcion que genera los planos
     generarPlanos()
+    
+    generarListaDeParches()
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -182,7 +187,18 @@ def generarPlanos():
                 y0 += step
         z0 += step
         y0 = 0
-    
+        
+def generarListaDeParches():
+    global patchesList
+    for i in range(0, SECTIONS / 2): #filas
+        patchesList.extend(planoXY[i])
+        patchesList.extend(planoXZ[i])
+        patchesList.extend(planoYZ[i])
+
+def dibujarListaParches():
+    for i in range(0, len(patchesList)):
+        patchesList[i].dibujar()
+
 def dibujarPlano(plano):
     for i in range(0, SECTIONS / 2): #filas
         for j in range(0, SECTIONS): #columnas
