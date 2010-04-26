@@ -46,6 +46,9 @@ planoXZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 
 #lista completa de los parches
 patchesList = []
+dataMatrix = zeros( (len(patchesList),len(patchesList)) )
+emsVector = zeros(len(patchesList))
+BVector = zeros(len(patchesList))
 
 #limites de los planos
 
@@ -102,7 +105,7 @@ def DrawGLScene():
     
     #dibujo el escenario
     escenario()
-    print formfactor(patchesList[0],patchesList[1])
+    #print formfactor(patchesList[0],patchesList[len(patchesList)-1])
 
     #  Intercambiamos los buffers. Ahora lo visible es lo que acabamos de dibujar.
     glutSwapBuffers()
@@ -192,10 +195,26 @@ def generarPlanos():
         
 def generarListaDeParches():
     global patchesList
+    global BVector
     for i in range(0, SECTIONS / 2): #filas
         patchesList.extend(planoXY[i])
         patchesList.extend(planoXZ[i])
         patchesList.extend(planoYZ[i])
+        
+    dataMatrix = zeros( (len(patchesList),len(patchesList)) )
+    emsVector = zeros(len(patchesList)
+    for p in range(0,len(patchesList)-1)
+        for q in range(0,len(patchesList)-1)
+            p1 = patchesList[p]
+            p2 = patchesList[q]
+            ff = formfactor(p1,p2)
+            rho = p1.r
+            if p==q:
+                dataMatrix[p,q] = 1-rho*ff
+            else
+                dataMatrix[p,q] = -rho*ff
+            emsVector[p] = p1.e
+    BVector = sistema(dataMatrix,emsVector)
 
 def dibujarListaParches():
     for i in range(0, len(patchesList)):
