@@ -1,0 +1,11 @@
+.* # Ignore all dotfiles...
+.classpath
+.project
+!.gitignore # except for .gitignore
+!.settings
+
+#ignoro logs
+*.log
+
+#ignoro "compilados" de python
+*.pyc
