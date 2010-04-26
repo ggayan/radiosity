@@ -49,6 +49,7 @@ patchesList = []
 dataMatrix = zeros( (len(patchesList),len(patchesList)) )
 emsVector = zeros(len(patchesList))
 BVector = zeros(len(patchesList))
+ajusteRadiosity = 1 #el ajuste por el que se dividira el BVector
 
 #limites de los planos
 
@@ -61,13 +62,14 @@ def InitGL(width, height):
     
     generarListaDeParches()
     
+    generarMatrizRadiosity()
+    
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
     glClearDepth(1.0)                   # Enables Clearing Of The Depth Buffer
     glDepthFunc(GL_LESS)                # The Type Of Depth Test To Do
     glEnable(GL_DEPTH_TEST)             # Enables Depth Testing
     glShadeModel(GL_SMOOTH)             # Enables Smooth Color Shading
-    glDisable(GL_CULL_FACE)
     
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()                    # Reset The Projection Matrix
@@ -112,14 +114,19 @@ def DrawGLScene():
     
 #las figuras a dibujar
 def escenario():
+    
     glBegin(GL_TRIANGLES)
+    dibujarListaParches()
+    #dibujarPlanos()
+    glEnd()
+    
+def dibujarPlanos():
     glColor(0.5, 0, 0)
     dibujarPlano(planoXY)
     glColor(0, 0.5, 0)
     dibujarPlano(planoXZ)
     glColor(0, 0, 0.5)
     dibujarPlano(planoYZ)
-    glEnd()
     
 #funcion que genera los planos a dibujar
 def generarPlanos():
@@ -148,6 +155,11 @@ def generarPlanos():
                 p3 = Punto(x0 + step, y0, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
                 y0 += step
+                
+            planoXY[i][j].coords = 'XY'
+            if i == SECTIONS/4 and j == SECTIONS/2:
+                #le asigno emisividad al parche de la mitad
+                planoXY[i][j].e = 1000
         x0 += step
         y0 = 0
     
@@ -169,6 +181,8 @@ def generarPlanos():
                 p3 = Punto(x0 + step, 0, z0)
                 planoXZ[i][j] = Patch(p1, p2, p3)
                 z0 += step
+                
+            planoXZ[i][j].coords = 'XZ'
         x0 += step
         z0 = 0
         
@@ -190,21 +204,26 @@ def generarPlanos():
                 p3 = Punto(0, y0, z0 + step)
                 planoYZ[i][j] = Patch(p1, p2, p3)
                 y0 += step
+                
+            planoYZ[i][j].coords = 'YZ'
         z0 += step
         y0 = 0
         
 def generarListaDeParches():
     global patchesList
-    global BVector
     for i in range(0, SECTIONS / 2): #filas
         patchesList.extend(planoXY[i])
         patchesList.extend(planoXZ[i])
         patchesList.extend(planoYZ[i])
+    
+def generarMatrizRadiosity():
+    global BVector
+    global ajusteRadiosiy
         
-    dataMatrix = zeros( (len(patchesList),len(patchesList)) )
+    dataMatrix = zeros((len(patchesList),len(patchesList)))
     emsVector = zeros(len(patchesList))
-    for p in range(0,len(patchesList)-1):
-        for q in range(0,len(patchesList)-1):
+    for p in range(0,len(patchesList)):
+        for q in range(0,len(patchesList)):
             p1 = patchesList[p]
             p2 = patchesList[q]
             ff = formfactor(p1,p2)
@@ -214,18 +233,23 @@ def generarListaDeParches():
             else:
                 dataMatrix[p,q] = -rho*ff
             emsVector[p] = p1.e
-    BVector = sistema(dataMatrix,emsVector)
-    print BVector 
+    BVector = sistema(dataMatrix,emsVector) / ajusteRadiosity
+    
 
 def dibujarListaParches():
     for i in range(0, len(patchesList)):
+        if patchesList[i].coords == 'XY':
+            glColor(1.0 * BVector[i],0,0)
+        if patchesList[i].coords == 'YZ':
+            glColor(0,1.0 * BVector[i],0)
+        if patchesList[i].coords == 'XZ':
+            glColor(0,0,1.0 * BVector[i])
         patchesList[i].dibujar()
 
 def dibujarPlano(plano):
     for i in range(0, SECTIONS / 2): #filas
         for j in range(0, SECTIONS): #columnas
             plano[i][j].dibujar()
-    
     
 def axis():
     glBegin(GL_LINES)
