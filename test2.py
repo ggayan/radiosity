@@ -1,6 +1,7 @@
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
+from numpy import *
 import time
 import sys
 import math
@@ -31,12 +32,24 @@ UP_VECTOR_Z = 0
 WIDTH = 800
 HEIGHT = 600
 
-#variables de las esferas
-MINSECTIONS = 20 #secciones triangulares minimas para representar cada fila de un plano
-SECTIONS = MINSECTIONS #numero de triangulos por fila de un plano
+#variables de los planos
+SECTIONS = 4 #numero de triangulos por columna de un plano
+
+#las filas tienen la mitad de secciones
+
+#planos, son arreglos dobles
+planoXY = [ [0] * SECTIONS ] * (SECTIONS / 2)
+planoYZ = [ [0] * SECTIONS ] * (SECTIONS / 2)
+planoXZ = [ [0] * SECTIONS ] * (SECTIONS / 2)
+
+#limites de los planos
+
 
 # Configuramos OpenGL
 def InitGL(width, height):              
+    
+    #llamo la funcion que genera los planos
+    generarPlanos()
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -48,7 +61,7 @@ def InitGL(width, height):
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()                    # Reset The Projection Matrix
                                         # Calculate The Aspect Ratio Of The Window
-    gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
+    gluPerspective(45.0, float(width) / float(height), 0.1, 100.0)
 
     glMatrixMode(GL_MODELVIEW)
 
@@ -62,7 +75,7 @@ def ReSizeGLScene(width, height):
     glViewport(0, 0, width, height) 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluPerspective(45.0, float(width)/float(height), 0.1, 100.0)
+    gluPerspective(45.0, float(width) / float(height), 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
 
 # Lo que se dibujar'a
@@ -80,7 +93,7 @@ def DrawGLScene():
     axis()
     
     #dibujo el escenario
-    scenario()
+    scenario2()
 
     #  Intercambiamos los buffers. Ahora lo visible es lo que acabamos de dibujar.
     glutSwapBuffers()
@@ -114,6 +127,52 @@ def scenario(): #dibujar los planos
     
     glEnd()
     
+def scenario2():
+    glBegin(GL_TRIANGLES)
+    glColor(0.5, 0, 0)
+    dibujarPlano(planoXY)
+    #glColor(0, 0.5, 0)
+    #dibujarYZ()
+    #glColor(0, 0, 0.5)
+    #dibujarXZ()
+    glEnd()
+    
+#funcion que genera los planos a dibujar
+def generarPlanos():
+    global planoXY
+    size = 1.0
+    step = size / SECTIONS
+    
+    x0 = 0
+    y0 = 0
+    for i in range(0,SECTIONS / 2): #eje horizonal
+        for j in range(0,SECTIONS): #eje vertical
+            if j % 2 == 0: #pares
+                p1 = Punto(x0, y0, 0)
+                p2 = Punto(x0, y0 + step, 0)
+                p3 = Punto(x0 + step, y0, 0)
+                planoXY[i][j] = Patch(p1, p2, p3)
+            else:
+                #segundo triangulo
+                p1 = Punto(x0, y0 + step, 0)
+                p2 = Punto(x0 + step, y0 + step, 0)
+                p3 = Punto(x0 + step, y0, 0)
+                planoXY[i][j] = Patch(p1, p2, p3)
+                y0 += step
+            print "i: ", i
+            print "j: ", j
+            planoXY[i][j].p1.imprimir("p1")
+            planoXY[i][j].p2.imprimir("p2")
+            planoXY[i][j].p3.imprimir("p3")
+            print "#######"
+        x0 += step
+    
+def dibujarPlano(plano):
+    for i in range(0,SECTIONS / 2): #filas
+        for j in range(0,SECTIONS): #columnas
+            plano[i][j].dibujar()
+    
+    
 def axis():
     glBegin(GL_LINES)
     glColor(1, 0, 0) #rojo = X
@@ -141,9 +200,9 @@ def keyPressed(*args): #Presionar una tecla
         glutDestroyWindow(windowId)
         sys.exit()
     if key == '\152': #j
-        SECTIONS+= 1 #Aumento el detalle
+        SECTIONS += 1 #Aumento el detalle
     if key == '\153' and SECTIONS > MINSECTIONS: #k
-        SECTIONS-= 1 #decremento el detalle
+        SECTIONS -= 1 #decremento el detalle
     if key == '\161': #q
         VIEWPOINT_X = VIEWPOINT_X + 0.2
         print "VIEWPOINT_X =", VIEWPOINT_X
