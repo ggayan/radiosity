@@ -1,4 +1,4 @@
-from OpenGL.GL import *
+from OpenGL.GL import glVertex3f
 import math
 
 #implementado como triangulo
