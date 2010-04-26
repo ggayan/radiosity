@@ -9,9 +9,6 @@ from patch import *
 from punto import *
 
 windowId = -1
-ESCAPE = '\033'
-ARRIBA = '\152' #j
-ABAJO = '\153' #k
 X = 0
 Y = 0
 Z = 2
@@ -124,12 +121,12 @@ def keyPressed(*args):
     key = args[0]
     
     # Si presiono ESCAPE, salir de la aplicacion. Liberar recursos antes.
-    if key == ESCAPE:
+    if key == '\033':
         glutDestroyWindow(windowId)
         sys.exit()
-    if key == ARRIBA:
+    if key == '\152': #j
         SECTIONS+= 1 #Aumento el detalle
-    if key == ABAJO and SECTIONS > MINSECTIONS:
+    if key == '\153' and SECTIONS > MINSECTIONS: #k
         SECTIONS-= 1 #decremento el detalle
     if key == '\161': #q
         X = X + 0.2
@@ -172,7 +169,7 @@ def main():
     # Donde queremos que se posicione la ventana al iniciar.
     glutInitWindowPosition(0, 0)
     
-    windowId = glutCreateWindow("CC52B - Tarea 1 - Gabriel Gayan")
+    windowId = glutCreateWindow("CC52B - Radiosity")
 
     glutDisplayFunc (DrawGLScene)
     glutIdleFunc(DrawGLScene)
