@@ -238,7 +238,7 @@ def generarListaDeParches():
         patchesList.extend(planoXZ[i])
         patchesList.extend(planoYZ[i])
         
-    patchesList.append(Patch(Punto(1.2,1.3,1.0),Punto(1.0,1.5,1.2),Punto(1.0,1.0,1.0)))
+    patchesList.append(Patch(Punto(1.0,1.2,1.2),Punto(1.0,1.0,1.0),Punto(1.2,1.3,1.0)))
     patchesList[len(patchesList)-1].er = 1000  #emisividad roja
     patchesList[len(patchesList)-1].ev = 1000  #emisividad verde
     patchesList[len(patchesList)-1].eb = 1000  #emisividad azul
