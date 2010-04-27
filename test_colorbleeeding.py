@@ -155,14 +155,14 @@ def generarPlanos():
         for j in range(0, SECTIONS): #eje vertical
             if j % 2 == 0: #pares
                 p1 = Punto(x0, y0, 0)
-                p2 = Punto(x0, y0 + step, 0)
-                p3 = Punto(x0 + step, y0, 0)
+                p2 = Punto(x0 + step, y0, 0)
+                p3 = Punto(x0, y0 + step, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
                 p1 = Punto(x0, y0 + step, 0)
-                p2 = Punto(x0 + step, y0 + step, 0)
-                p3 = Punto(x0 + step, y0, 0)
+                p2 = Punto(x0 + step, y0, 0)
+                p3 = Punto(x0 + step, y0 + step, 0)
                 planoXY[i][j] = Patch(p1, p2, p3)
                 y0 += step
                 
@@ -173,9 +173,9 @@ def generarPlanos():
             #    planoXY[i][j].ev = 1000  #emisividad verde
             #    planoXY[i][j].eb = 1000  #emisividad azul
                 
-            planoXY[i][j].rr = 0.2
+            planoXY[i][j].rr = 1.0
             planoXY[i][j].rv = 1.0
-            planoXY[i][j].rb = 0.2
+            planoXY[i][j].rb = 1.0
         x0 += step
         y0 = 0
     
@@ -239,9 +239,10 @@ def generarListaDeParches():
         patchesList.extend(planoYZ[i])
         
     patchesList.append(Patch(Punto(1.0,1.2,1.2),Punto(1.0,1.0,1.0),Punto(1.2,1.3,1.0)))
-    patchesList[len(patchesList)-1].er = 1000  #emisividad roja
-    patchesList[len(patchesList)-1].ev = 1000  #emisividad verde
-    patchesList[len(patchesList)-1].eb = 1000  #emisividad azul
+    
+    patchesList[len(patchesList)-1].er = 1000/2  #emisividad roja
+    patchesList[len(patchesList)-1].ev = 1000/2  #emisividad verde
+    patchesList[len(patchesList)-1].eb = 1000/2  #emisividad azul
     
 def generarMatrizRadiosity():
     global BVectorRed
