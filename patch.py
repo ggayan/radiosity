@@ -7,17 +7,20 @@ class Patch:
     #x = 0
     #y = 0
     #z = 0
-    rr = 0.8  # reflectividad roja
+    rr = 0  # reflectividad roja
     er = 0  # emisividad roja
-    rv = 0.3  # reflectividad verde
+    rv = 0  # reflectividad verde
     ev = 0  # emisividad verde
-    rb = 0.3  # reflectividad azul
+    rb = 0  # reflectividad azul
     eb = 0  # emisividad azul
 
     def __init__(self,p1,p2,p3):
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3
+        self.nr = self.normal()
+        self.cn = self.center()
+        self.ar = self.area()
 
     #retorna el baricentro del parche
     def center(self):

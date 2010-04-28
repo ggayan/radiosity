@@ -238,7 +238,7 @@ def generarListaDeParches():
         patchesList.extend(planoXZ[i])
         patchesList.extend(planoYZ[i])
         
-    patchesList.append(Patch(Punto(1.0,1.2,1.2),Punto(1.0,1.0,1.0),Punto(1.2,1.3,1.0)))
+    patchesList.append(Patch(Punto(1.0,1.2,1.2),Punto(1.3,1.3,1.3),Punto(1.2,1.3,1.0)))
     
     patchesList[len(patchesList)-1].er = 1000/2  #emisividad roja
     patchesList[len(patchesList)-1].ev = 1000/2  #emisividad verde
@@ -253,50 +253,36 @@ def generarMatrizRadiosity():
     # calculo radiosity ROJO    
     dataMatrixRed = zeros((len(patchesList),len(patchesList)))
     emsVectorRed = zeros(len(patchesList))
-    for p in range(0,len(patchesList)):
-        for q in range(0,len(patchesList)):
-            p1 = patchesList[p]
-            p2 = patchesList[q]
-            ff = formfactor(p1,p2)
-            rho = p1.rr
-            if p==q:
-                dataMatrixRed[p,q] = 1-rho*ff
-            else:
-                dataMatrixRed[p,q] = -rho*ff
-            emsVectorRed[p] = p1.er
-    BVectorRed = sistema(dataMatrixRed,emsVectorRed) / ajusteRadiosity
-    
     # calculo radiosity VERDE    
     dataMatrixGreen = zeros((len(patchesList),len(patchesList)))
     emsVectorGreen = zeros(len(patchesList))
-    for p in range(0,len(patchesList)):
-        for q in range(0,len(patchesList)):
-            p1 = patchesList[p]
-            p2 = patchesList[q]
-            ff = formfactor(p1,p2)
-            rho = p1.rv
-            if p==q:
-                dataMatrixGreen[p,q] = 1-rho*ff
-            else:
-                dataMatrixGreen[p,q] = -rho*ff
-            emsVectorGreen[p] = p1.ev
-    BVectorGreen = sistema(dataMatrixGreen,emsVectorGreen) / ajusteRadiosity
-    
     # calculo radiosity AZUL   
     dataMatrixBlue = zeros((len(patchesList),len(patchesList)))
     emsVectorBlue = zeros(len(patchesList))
+    
     for p in range(0,len(patchesList)):
         for q in range(0,len(patchesList)):
             p1 = patchesList[p]
             p2 = patchesList[q]
             ff = formfactor(p1,p2)
-            rho = p1.rb
+            rhor = p1.rr
+            rhov = p1.rv
+            rhob = p1.rb
             if p==q:
-                dataMatrixBlue[p,q] = 1-rho*ff
+                dataMatrixRed[p,q] = 1-rhor*ff
+                dataMatrixGreen[p,q] = 1-rhov*ff
+                dataMatrixBlue[p,q] = 1-rhob*ff
             else:
-                dataMatrixBlue[p,q] = -rho*ff
+                dataMatrixRed[p,q] = -rhor*ff
+                dataMatrixGreen[p,q] = -rhov*ff
+                dataMatrixBlue[p,q] = -rhob*ff
+            emsVectorRed[p] = p1.er
+            emsVectorGreen[p] = p1.ev
             emsVectorBlue[p] = p1.eb
+    BVectorRed = sistema(dataMatrixRed,emsVectorRed) / ajusteRadiosity
+    BVectorGreen = sistema(dataMatrixGreen,emsVectorGreen) / ajusteRadiosity
     BVectorBlue = sistema(dataMatrixBlue,emsVectorBlue) / ajusteRadiosity
+    
 
 def dibujarListaParches():
     for i in range(0, len(patchesList)):
