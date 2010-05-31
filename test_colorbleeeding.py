@@ -14,11 +14,15 @@ from functions import *
 windowId = -1
 
 #parametros del punto de vista
+# punto de vista inicial
+IVX = 4
+IVY = 4
+IVZ = 4
 
 #el punto desde el cual miro
-VIEWPOINT_X = 1.2
-VIEWPOINT_Y = 0.8
-VIEWPOINT_Z = 1.6
+VIEWPOINT_X = IVX
+VIEWPOINT_Y = IVY
+VIEWPOINT_Z = IVZ
 
 #el punto al cual miro
 LOOK_AT_X = 0
@@ -36,6 +40,10 @@ HEIGHT = 600
 
 #variables de los planos
 SECTIONS = 16 #numero de triangulos por columna de un plano
+
+# intensidad de fuentes luminosas
+INITINTEN = 50.0
+INTENSITY = 1
 
 #las filas tienen la mitad de secciones
 
@@ -61,11 +69,7 @@ BVectorBlue = zeros(len(patchesList))
 
 ajusteRadiosity = 1 #el ajuste por el que se dividira el BVectorRed
 
-#limites de los planos
-
-
-# Configuramos OpenGL
-def InitGL(width, height):              
+def init(width, height):              
     
     #llamo la funcion que genera los planos
     generarPlanos()
@@ -127,16 +131,7 @@ def escenario():
     
     glBegin(GL_TRIANGLES)
     dibujarListaParches()
-    #dibujarPlanos()
     glEnd()
-    
-def dibujarPlanos():
-    glColor(0.5, 0, 0)
-    dibujarPlano(planoXY)
-    glColor(0, 0.5, 0)
-    dibujarPlano(planoXZ)
-    glColor(0, 0, 0.5)
-    dibujarPlano(planoYZ)
     
 #funcion que genera los planos a dibujar
 def generarPlanos():
@@ -144,7 +139,7 @@ def generarPlanos():
     global planoXZ
     global planoYZ
     
-    size = 1.0
+    size = 5.0
     step = size / SECTIONS
     
     #planoXY
@@ -167,12 +162,7 @@ def generarPlanos():
                 y0 += step
                 
             planoXY[i][j].coords = 'XY'
-            #if i == SECTIONS/4 and j == SECTIONS/2:
-            #    #le asigno emisividad al parche de la mitad
-            #    planoXY[i][j].er = 1000  #emisividad roja
-            #    planoXY[i][j].ev = 1000  #emisividad verde
-            #    planoXY[i][j].eb = 1000  #emisividad azul
-                
+                            
             planoXY[i][j].rr = 1.0
             planoXY[i][j].rv = 1.0
             planoXY[i][j].rb = 1.0
@@ -200,8 +190,8 @@ def generarPlanos():
                 
             planoXZ[i][j].coords = 'XZ'
             planoXZ[i][j].rr = 1.0
-            planoXZ[i][j].rv = 0.4
-            planoXZ[i][j].rb = 0.2
+            planoXZ[i][j].rv = 0.0
+            planoXZ[i][j].rb = 0.0
         x0 += step
         z0 = 0
         
@@ -237,12 +227,23 @@ def generarListaDeParches():
         patchesList.extend(planoXY[i])
         patchesList.extend(planoXZ[i])
         patchesList.extend(planoYZ[i])
-        
-    patchesList.append(Patch(Punto(1.0,1.2,1.2),Punto(1.3,1.3,1.3),Punto(1.2,1.3,1.0)))
     
-    patchesList[len(patchesList)-1].er = 1000/2  #emisividad roja
-    patchesList[len(patchesList)-1].ev = 1000/2  #emisividad verde
-    patchesList[len(patchesList)-1].eb = 1000/2  #emisividad azul
+    aniadirFuentesLuminosa(patchesList)
+
+def aniadirFuentesLuminosa(pat_list):
+    global totalLuces
+    
+    # aniado fuentes luminosas al final de la lista
+    pat_list.append(Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0)))
+    pat_list.append(Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4)))
+    totalLuces = 2
+    cambiarLuminosidad()
+
+def cambiarLuminosidad():
+    for x in range(0,totalLuces):
+        patchesList[len(patchesList)-1-x].er = INITINTEN+INTENSITY  #emisividad roja
+        patchesList[len(patchesList)-1-x].ev = INITINTEN+INTENSITY  #emisividad verde
+        patchesList[len(patchesList)-1-x].eb = INITINTEN+INTENSITY  #emisividad azul
     
 def generarMatrizRadiosity():
     global BVectorRed
@@ -288,10 +289,6 @@ def dibujarListaParches():
     for i in range(0, len(patchesList)):
         #if patchesList[i].coords == 'XY':
         glColor(1.0 * BVectorRed[i],1.0 * BVectorGreen[i], 1.0 * BVectorBlue[i])
-        #if patchesList[i].coords == 'YZ':
-        #    glColor(0,1.0 * BVectorRed[i],0)
-        #if patchesList[i].coords == 'XZ':
-        #    glColor(0,0,1.0 * BVectorRed[i])
         patchesList[i].dibujar()
 
 def dibujarPlano(plano):
@@ -300,16 +297,17 @@ def dibujarPlano(plano):
             plano[i][j].dibujar()
     
 def axis():
+    axsize = 1
     glBegin(GL_LINES)
     glColor(1, 0, 0) #rojo = X
-    glVertex3f(1, 0, 0)
-    glVertex3f(-1, 0, 0)
+    glVertex3f(axsize, 0, 0)
+    glVertex3f(-axsize, 0, 0)
     glColor(0, 1, 0) #verde = Y
-    glVertex3f(0, 1, 0)
-    glVertex3f(0, -1, 0)
+    glVertex3f(0, axsize, 0)
+    glVertex3f(0, -axsize, 0)
     glColor(0, 0, 1) #azul = Z
-    glVertex3f(0, 0, 1)
-    glVertex3f(0, 0, -1)
+    glVertex3f(0, 0, axsize)
+    glVertex3f(0, 0, -axsize)
     glEnd()
 
 def keyPressed(*args): #Presionar una tecla
@@ -317,7 +315,8 @@ def keyPressed(*args): #Presionar una tecla
     global VIEWPOINT_Y
     global VIEWPOINT_Z
     global SECTIONS
-    global MINSECTIONS
+    # global MINSECTIONS
+    global INTENSITY
     
     key = args[0]
     
@@ -325,10 +324,14 @@ def keyPressed(*args): #Presionar una tecla
     if key == '\033':
         glutDestroyWindow(windowId)
         sys.exit()
-    if key == '\152': #j
-        SECTIONS += 1 #Aumento el detalle
-    if key == '\153' and SECTIONS > MINSECTIONS: #k
-        SECTIONS -= 1 #decremento el detalle
+    # if key == '\152': #j
+    #     SECTIONS += 1 #Aumento el detalle
+    # if key == '\153' and SECTIONS > MINSECTIONS: #k
+    #     SECTIONS -= 1 #decremento el detalle
+    if key == '\162': # reset camara
+        VIEWPOINT_X = IVX
+        VIEWPOINT_Y = IVY
+        VIEWPOINT_Z = IVZ
     if key == '\161': #q
         VIEWPOINT_X = VIEWPOINT_X + 0.2
         print "VIEWPOINT_X =", VIEWPOINT_X
@@ -349,29 +352,32 @@ def keyPressed(*args): #Presionar una tecla
     if key == '\144': #d
         VIEWPOINT_Z = VIEWPOINT_Z - 0.2
         print "VIEWPOINT_Z =", VIEWPOINT_Z
+    # (+,-) intensidad de la luz
+    if key == '\053':
+        INTENSITY = INTENSITY + 10
+        cambiarLuminosidad()
+        generarMatrizRadiosity()
+        print "INTENSITY =",INTENSITY
+    if key == '\055' and INTENSITY-10<INITINTEN:
+        INTENSITY = INTENSITY - 10
+        cambiarLuminosidad()
+        generarMatrizRadiosity()
+        print "INTENSITY =",INTENSITY
+        
 
 def main(): #Nuestra funcion principal
     global windowId
     
-    # Configurar OpenGL
     glutInit(())
-
-    # Mi modo de Display. Por ahora, no importa
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH)
-    
-    # Tamano de la ventana.
     glutInitWindowSize(WIDTH, HEIGHT)
-    
-    # Donde queremos que se posicione la ventana al iniciar.
     glutInitWindowPosition(0, 0)
-    
     windowId = glutCreateWindow("CC52B - Radiosity")
-
     glutDisplayFunc (DrawGLScene)
     glutIdleFunc(DrawGLScene)
     glutReshapeFunc (ReSizeGLScene)
     glutKeyboardFunc (keyPressed)
-    InitGL(WIDTH, HEIGHT)
+    init(WIDTH, HEIGHT)
 
     # Loop infinito
     glutMainLoop()

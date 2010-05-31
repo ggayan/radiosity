@@ -9,6 +9,7 @@ import time
 
 from patch import *
 from punto import *
+from functions import *
 
 windowId = -1
 ESCAPE = '\033'
@@ -45,6 +46,7 @@ def InitGL():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     #glTranslatef(-100.0, 0.0, 0.0)
+    #sistema()
     
 def Init():
     
@@ -178,6 +180,7 @@ def DrawGLScene():
     #glTranslatef(0,0,1.0)
     zoomFactor = 5
     gluPerspective (50.0*zoomFactor, 1, -5, 5)
+    #gluPerspective(45.0, float(WIDTH)/float(HEIGHT), 0.1, 100.0)
     gluLookAt(X,Y,Z, 0,0,0, 0,0,-1)
     
     
@@ -189,7 +192,7 @@ def DrawGLScene():
     test(D)
     glPopMatrix();
 
-    scenario()
+    #scenario()
     axis()
        
     # glPushMatrix()

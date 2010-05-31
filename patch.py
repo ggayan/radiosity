@@ -4,14 +4,12 @@ import math
 #implementado como triangulo
 class Patch:
 
-    #x = 0
-    #y = 0
-    #z = 0
     rr = 0  # reflectividad roja
-    er = 0  # emisividad roja
     rv = 0  # reflectividad verde
-    ev = 0  # emisividad verde
     rb = 0  # reflectividad azul
+    
+    er = 0  # emisividad roja
+    ev = 0  # emisividad verde
     eb = 0  # emisividad azul
 
     def __init__(self,p1,p2,p3):
