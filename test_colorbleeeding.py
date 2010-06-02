@@ -164,7 +164,7 @@ def generarPlanos():
             planoXY[i][j].coords = 'XY'
                             
             planoXY[i][j].rr = 1.0
-            planoXY[i][j].rv = 1.0
+            planoXY[i][j].rg = 1.0
             planoXY[i][j].rb = 1.0
         x0 += step
         y0 = 0
@@ -190,7 +190,7 @@ def generarPlanos():
                 
             planoXZ[i][j].coords = 'XZ'
             planoXZ[i][j].rr = 1.0
-            planoXZ[i][j].rv = 0.0
+            planoXZ[i][j].rg = 0.0
             planoXZ[i][j].rb = 0.0
         x0 += step
         z0 = 0
@@ -215,8 +215,8 @@ def generarPlanos():
                 y0 += step
                 
             planoYZ[i][j].coords = 'YZ'
-            planoYZ[i][j].rr = 0.2
-            planoYZ[i][j].rv = 0.4
+            planoYZ[i][j].rr = 0.0
+            planoYZ[i][j].rg = 0.0
             planoYZ[i][j].rb = 1.0
         z0 += step
         y0 = 0
@@ -242,7 +242,7 @@ def aniadirFuentesLuminosa(pat_list):
 def cambiarLuminosidad():
     for x in range(0,totalLuces):
         patchesList[len(patchesList)-1-x].er = INITINTEN+INTENSITY  #emisividad roja
-        patchesList[len(patchesList)-1-x].ev = INITINTEN+INTENSITY  #emisividad verde
+        patchesList[len(patchesList)-1-x].eg = INITINTEN+INTENSITY  #emisividad verde
         patchesList[len(patchesList)-1-x].eb = INITINTEN+INTENSITY  #emisividad azul
     
 def generarMatrizRadiosity():
@@ -267,7 +267,7 @@ def generarMatrizRadiosity():
             p2 = patchesList[q]
             ff = formfactor(p1,p2)
             rhor = p1.rr
-            rhov = p1.rv
+            rhov = p1.rg
             rhob = p1.rb
             if p==q:
                 dataMatrixRed[p,q] = 1-rhor*ff
@@ -278,17 +278,22 @@ def generarMatrizRadiosity():
                 dataMatrixGreen[p,q] = -rhov*ff
                 dataMatrixBlue[p,q] = -rhob*ff
             emsVectorRed[p] = p1.er
-            emsVectorGreen[p] = p1.ev
+            emsVectorGreen[p] = p1.eg
             emsVectorBlue[p] = p1.eb
     BVectorRed = sistema(dataMatrixRed,emsVectorRed) / ajusteRadiosity
     BVectorGreen = sistema(dataMatrixGreen,emsVectorGreen) / ajusteRadiosity
     BVectorBlue = sistema(dataMatrixBlue,emsVectorBlue) / ajusteRadiosity
+    for x in range(0,len(patchesList)):
+        patchesList[x].cr = BVectorRed[x]
+        patchesList[x].cg = BVectorGreen[x]
+        patchesList[x].cb = BVectorBlue[x]
     
 
 def dibujarListaParches():
     for i in range(0, len(patchesList)):
         #if patchesList[i].coords == 'XY':
-        glColor(1.0 * BVectorRed[i],1.0 * BVectorGreen[i], 1.0 * BVectorBlue[i])
+        # glColor(1.0 * BVectorRed[i],1.0 * BVectorGreen[i], 1.0 * BVectorBlue[i])
+        glColor(patchesList[i].cr, patchesList[i].cg, patchesList[i].cb)
         patchesList[i].dibujar()
 
 def dibujarPlano(plano):

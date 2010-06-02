@@ -5,12 +5,16 @@ import math
 class Patch:
 
     rr = 0  # reflectividad roja
-    rv = 0  # reflectividad verde
+    rg = 0  # reflectividad verde
     rb = 0  # reflectividad azul
     
     er = 0  # emisividad roja
-    ev = 0  # emisividad verde
+    eg = 0  # emisividad verde
     eb = 0  # emisividad azul
+    
+    cr = 0  # color (luz excedente) roja
+    cg = 0  # color (luz excedente) verde
+    cb = 0  # color (luz excedente) azul
 
     def __init__(self,p1,p2,p3):
         self.p1 = p1
@@ -33,7 +37,13 @@ class Patch:
     def normal(self):
         b_menos_a = self.p2.resta(self.p1, 1) # == (p2 - p1) / 1
         c_menos_a = self.p3.resta(self.p1, 1) # == (p3 - p1) / 1
-        return b_menos_a.cruz(c_menos_a)
+        cruz = b_menos_a.cruz(c_menos_a)
+        mod = math.sqrt(cruz.x*cruz.x + cruz.y*cruz.y + cruz.z*cruz.z)
+        cruz.x = cruz.x/mod
+        cruz.y = cruz.y/mod
+        cruz.z = cruz.z/mod
+        
+        return cruz
     
     def area(self):
         p1 = self.p1

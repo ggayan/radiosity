@@ -14,7 +14,7 @@ def formfactor(p_i,p_j):
     n_j = p_j.nr
     d_ij = Punto(c_i.x-c_j.x, c_i.y-c_j.y, c_i.z-c_j.z)
     
-    H_ij = 1  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
+    H_ij = visibility(p_i,p_j)  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
     r = math.sqrt(math.pow(c_i.x-c_j.x,2)+math.pow(c_i.y-c_j.y,2)+math.pow(c_i.z-c_j.z,2)) #centro p_i, p_j
     if r==0:
         return 0
@@ -30,4 +30,18 @@ def formfactor(p_i,p_j):
 def sistema(a,b):
     x = linalg.solve(a, b)
     return x
+    
+# recibe dos parches, y determina el factor de visibilidad entre los centros de ambos (valor entre 0 y 1)
+def visibility(p_i,p_j):
+    #  calcular recta entre centros de pi y pj, recta = r
+    #  para cada parche p en la escena
+    #     calcular distancia del centro de p a la recta (distancia = d)
+    #     calcular mayor distancia entre un vertice de p y el centro de p (dis_max = dm)
+    #     calcular angulo entre normal de p y r, angulo = th
+    #     calcular dd = dm*cos(th) -> 'cuanto se acerca p a r'
+    #     si d < dd => recta atraviesa parche
+    #        return 0
+    #  return 1
+    
+    return 1
 
