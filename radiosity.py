@@ -76,7 +76,8 @@ def init(width, height):
     
     generarListaDeParches()
     
-    generarMatrizRadiosity()
+    # generarMatrizRadiosity()
+    passIteration(5)
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -229,6 +230,10 @@ def generarListaDeParches():
         patchesList.extend(planoYZ[i])
     
     aniadirFuentesLuminosa(patchesList)
+    for x in range(1,len(patchesList)):
+        patchesList[x].cr = patchesList[x].er
+        patchesList[x].cg = patchesList[x].eg
+        patchesList[x].cb = patchesList[x].eb
 
 def aniadirFuentesLuminosa(pat_list):
     global totalLuces
@@ -244,6 +249,28 @@ def cambiarLuminosidad():
         patchesList[len(patchesList)-1-x].er = INITINTEN+INTENSITY  #emisividad roja
         patchesList[len(patchesList)-1-x].eg = INITINTEN+INTENSITY  #emisividad verde
         patchesList[len(patchesList)-1-x].eb = INITINTEN+INTENSITY  #emisividad azul
+        
+def passIteration(iterations):
+    for x in xrange(0,iterations):
+        # calculo de luz incidente en cada parche
+        for x in range(0,len(patchesList)):
+            aux_r = 0
+            aux_g = 0
+            aux_b = 0
+            for y in range(0,len(patchesList)):
+                ff = formfactor(patchesList[x],patchesList[y],patchesList)
+                aux_r = aux_r + patchesList[y].cr * ff
+                aux_g = aux_g + patchesList[y].cg * ff
+                aux_b = aux_b + patchesList[y].cb * ff
+            patchesList[x].ir = aux_r
+            patchesList[x].ig = aux_g
+            patchesList[x].ib = aux_b
+            
+        # calculo de luz excedente (color) de cada parche
+        for x in range(0,len(patchesList)):
+            patchesList[x].cr = patchesList[x].er + ( patchesList[x].ir * patchesList[x].rr )
+            patchesList[x].cg = patchesList[x].eg + ( patchesList[x].ig * patchesList[x].rg )
+            patchesList[x].cb = patchesList[x].eb + ( patchesList[x].ib * patchesList[x].rb )
     
 def generarMatrizRadiosity():
     global BVectorRed

@@ -1,3 +1,5 @@
+import math
+
 class Punto:
 
     def __init__(self,x1,y1,z1):
@@ -32,6 +34,20 @@ class Punto:
         z = self.x * p2.y - self.y * p2.x
         #y lo retornamos como punto
         return Punto(x, y, z)
+        
+    # producto punto entre dos Puntos, como si fueran vectores
+    def producto(self,p2):
+        sx = self.x*p2.x
+        sy = self.y*p2.y
+        sz = self.z*p2.z
+        
+        return sx+sy+sz
+        
+    # modulo de Punto, como si fuera un vector
+    def modulo(self):
+        aux = math.sqrt(self.producto(self))
+        # print aux
+        return aux
     
     def imprimir(self, name):
         x = self.x

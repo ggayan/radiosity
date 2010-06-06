@@ -15,6 +15,10 @@ class Patch:
     cr = 0  # color (luz excedente) roja
     cg = 0  # color (luz excedente) verde
     cb = 0  # color (luz excedente) azul
+    
+    ir = 0  # luz incidente roja
+    ig = 0  # luz incidente verde
+    ib = 0  # luz incidente azul
 
     def __init__(self,p1,p2,p3):
         self.p1 = p1
@@ -65,3 +69,10 @@ class Patch:
         glVertex3f(p1.x, p1.y, p1.z)
         glVertex3f(p2.x, p2.y, p2.z)
         glVertex3f(p3.x, p3.y, p3.z)
+        
+    # retorna el radio de la circunferencia circunscrita
+    def pradio(self):
+        d1 = self.cn.resta(self.p1,1).modulo()
+        d2 = self.cn.resta(self.p2,1).modulo()
+        d3 = self.cn.resta(self.p3,1).modulo()
+        return max(d1,d2,d3)
