@@ -27,6 +27,7 @@ class Patch:
         self.nr = self.normal()
         self.cn = self.center()
         self.ar = self.area()
+        self.pr = self.pradio()
 
     #retorna el baricentro del parche
     def center(self):

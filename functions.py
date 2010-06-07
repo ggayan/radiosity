@@ -5,9 +5,8 @@ from punto import *
 global patchesList
 counter = 0
 # recibe 2 parches i y j, retorna el F_ij  (al parecer, F_ij != F_ji)
-def formfactor(p_i,p_j,PL):
-    global patchesList
-    patchesList = PL
+def formfactor(p_i,p_j,visib):
+    # patchesList = PL
     # segun http://www.gamedev.net/reference/articles/article653.asp
     #       http://wiki.cgsociety.org/index.php/Radiosity#Form_Factor_Determination
     #
@@ -22,7 +21,7 @@ def formfactor(p_i,p_j,PL):
     if r==0:
         return 0
     dAj = p_j.ar
-    H_ij = visibility(p_i,p_j)  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
+    H_ij = visib  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
     
     #cosenos segun http://www.geoan.com/vectores/angulo.html
     costi = (d_ij.x*n_i.x + d_ij.y*n_i.y + d_ij.z*n_i.z)/((math.sqrt(d_ij.x*d_ij.x + d_ij.y*d_ij.y + d_ij.z*d_ij.z))*(math.sqrt(n_i.x*n_i.x+n_i.y*n_i.y+n_i.z*n_i.z)))
@@ -36,8 +35,10 @@ def sistema(a,b):
     return x
     
 # recibe dos parches, y determina el factor de visibilidad entre los centros de ambos (valor 0 o 1)
-def visibility(p_i,p_j):
-    global counter
+def visibility(p_i,p_j,PL):
+    global patchesList
+    patchesList = PL
+    # global counter
     # centros de p_, p_j
     ci = p_i.cn
     cj = p_j.cn
@@ -52,21 +53,21 @@ def visibility(p_i,p_j):
         w = cj.resta(ci,1)
         if( v.modulo() == 0 or w.modulo() == 0):
             return 1
-        acosval = (v.producto(w))/(v.modulo()*w.modulo())
-        if( acosval < -1):
-            acosval = -1
-        if( acosval > 1 ):
-            acosval = 1
-        theta = math.acos(acosval)
+        theta = v.anguloEntre(w)
     #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
         d = math.sin(theta) * v.modulo()
-    #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
-        dm = p.pradio()
+    # #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
+        dm = p.pr
     #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
+        alpha = p.nr.anguloEntre(w)
     #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
+        dd = dm*math.cos(alpha)
     #     SI D < DD => RECTA ATRAVIESA PARCHE
     #        RETURN 0
-    #  RETURN 1
+        if( d < dd ):
+            return 0
+        # FIN DEL LOOP
     
+    #  RETURN 1
     return 1
 

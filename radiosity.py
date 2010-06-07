@@ -13,6 +13,7 @@ from functions import *
 
 windowId = -1
 
+
 #parametros del punto de vista
 # punto de vista inicial
 IVX = 4
@@ -39,7 +40,7 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 16 #numero de triangulos por columna de un plano
+SECTIONS = 8 #numero de triangulos por columna de un plano
 
 # intensidad de fuentes luminosas
 INITINTEN = 50.0
@@ -51,6 +52,9 @@ INTENSITY = 1
 planoXY = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 planoYZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
 planoXZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
+
+FormFactors = None
+Visibilidad = None
 
 #lista completa de los parches
 patchesList = []
@@ -70,14 +74,26 @@ BVectorBlue = zeros(len(patchesList))
 ajusteRadiosity = 1 #el ajuste por el que se dividira el BVectorRed
 
 def init(width, height):              
+    global FormFactors
+    global Visibilidad
     
     #llamo la funcion que genera los planos
     generarPlanos()
     
     generarListaDeParches()
     
+    FormFactors = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
+    Visibilidad = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
+    
+    ITIME = time.time()
+    print "Computar Visibilidades"
+    computeVisibilidad()
+    print "OK visibilidades, computar FormFactors"
+    computeFormFactors()
+    print "OK FormFactors"
     # generarMatrizRadiosity()
     passIteration(5)
+    print "segundos= ",time.time()-ITIME
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -249,7 +265,32 @@ def cambiarLuminosidad():
         patchesList[len(patchesList)-1-x].er = INITINTEN+INTENSITY  #emisividad roja
         patchesList[len(patchesList)-1-x].eg = INITINTEN+INTENSITY  #emisividad verde
         patchesList[len(patchesList)-1-x].eb = INITINTEN+INTENSITY  #emisividad azul
-        
+  
+def computeVisibilidad():
+    global Visibilidad
+    for x in range(0,len(patchesList)):
+        for y in range(0,x+1):
+            if(x == y):
+                Visibilidad[x][y] = 1
+            else:
+                Visibilidad[x][y] = visibility(patchesList[x],patchesList[y],patchesList)
+def getVisibilidad(i,j):
+    if(Visibilidad[i][j] == -1):
+        return Visibilidad[j][i]
+    else:
+        return Visibilidad[i][j]
+            
+def computeFormFactors():
+    global FormFactors
+    for x in range(0,len(patchesList)):
+        for y in range(0,len(patchesList)):
+            FormFactors[x][y] = formfactor(patchesList[x],patchesList[y],getVisibilidad(x,y))
+def getFormFactor(i,j):
+    if(FormFactors[i][j] == -1):
+        return FormFactors[j][i]
+    else:
+        return FormFactors[i][j]
+       
 def passIteration(iterations):
     for x in xrange(0,iterations):
         # calculo de luz incidente en cada parche
@@ -258,7 +299,7 @@ def passIteration(iterations):
             aux_g = 0
             aux_b = 0
             for y in range(0,len(patchesList)):
-                ff = formfactor(patchesList[x],patchesList[y],patchesList)
+                ff = getFormFactor(x,y)
                 aux_r = aux_r + patchesList[y].cr * ff
                 aux_g = aux_g + patchesList[y].cg * ff
                 aux_b = aux_b + patchesList[y].cb * ff
@@ -409,6 +450,7 @@ def main(): #Nuestra funcion principal
     glutIdleFunc(DrawGLScene)
     glutReshapeFunc (ReSizeGLScene)
     glutKeyboardFunc (keyPressed)
+    
     init(WIDTH, HEIGHT)
 
     # Loop infinito
