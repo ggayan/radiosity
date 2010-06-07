@@ -10,66 +10,7 @@ from patch import *
 from punto import *
 from functions import *
 from cuerpos import *
-
-windowId = -1
-
-
-#parametros del punto de vista
-# punto de vista inicial
-IVX = 4
-IVY = 4
-IVZ = 4
-
-#el punto desde el cual miro
-VIEWPOINT_X = IVX
-VIEWPOINT_Y = IVY
-VIEWPOINT_Z = IVZ
-
-#el punto al cual miro
-LOOK_AT_X = 0
-LOOK_AT_Y = 0
-LOOK_AT_Z = 0
-
-#el vector que indica hacia donde es 'arriba' para la camara
-UP_VECTOR_X = 0
-UP_VECTOR_Y = 1
-UP_VECTOR_Z = 0
-
-#resolucion de la ventana
-WIDTH = 800
-HEIGHT = 600
-
-#variables de los planos
-SECTIONS = 8 #numero de triangulos por columna de un plano
-
-# intensidad de fuentes luminosas
-INITINTEN = 500.0
-INTENSITY = 1
-
-# variables de los planos
-size = 7.0
-step = size / SECTIONS
-
-XY_reflectance_red = 0.4
-XY_reflectance_green = 1.0
-XY_reflectance_blue = 0.4
-
-XZ_reflectance_red = 1.0
-XZ_reflectance_green = 0.6
-XZ_reflectance_blue = 0.6
-
-YZ_reflectance_red = 0.8
-YZ_reflectance_green = 0.8
-YZ_reflectance_blue = 1.0
-
-FormFactors = None
-Visibilidad = None
-
-#lista completa de los parches
-patchesList = []
-
-#lista de luces
-lightsList = []
+from variables import *
 
 def init(width, height):              
     global FormFactors
@@ -254,7 +195,8 @@ def generarPlanos():
 # funcion que llama a los metodos de cuerpos.py
 def generarCuerpos():
     global patchesList
-    patchesList.extend( patchesIcosaedro(1 , 1 , 2 , 0.4, 0) )
+    #patchesList.extend( patchesIcosaedro(1 , 1 , 2 , 0.4, 0) )
+    patchesList.extend( patchesIcosaedro_2(1 , 1 , 2 , 0.4, 0) )
     patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
 
 def aniadirFuentesLuminosas():
@@ -304,7 +246,7 @@ def computeFormFactors():
     global FormFactors
     for x, patch_1 in enumerate(patchesList):
         for y, patch_2 in enumerate(patchesList):
-            FormFactors[x][y] = formfactor(patch_1, patch_2, getVisibilidad(x,y))
+            FormFactors[x][y] = 2.0 * formfactor(patch_1, patch_2, getVisibilidad(x,y))
 
 def getFormFactor(i,j):
     if(FormFactors[i][j] == -1):
@@ -401,12 +343,10 @@ def keyPressed(*args): #Presionar una tecla
     if key == '\053':
         INTENSITY = INTENSITY + 10
         cambiarLuminosidad()
-        generarMatrizRadiosity()
         print "INTENSITY =",INTENSITY
     if key == '\055' and INTENSITY-10<INITINTEN:
         INTENSITY = INTENSITY - 10
         cambiarLuminosidad()
-        generarMatrizRadiosity()
         print "INTENSITY =",INTENSITY
         
 
