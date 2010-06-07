@@ -55,3 +55,15 @@ class Punto:
         z = self.z
         
         print name + ": x = {0}, y = {1}, z = {2}".format(x, y, z)
+        
+    # calcula angulo entre dos puntos, como si fueran vectores
+    def anguloEntre(self,p2):
+        v = self
+        w = p2
+        acosval = (v.producto(w))/(v.modulo()*w.modulo())
+        if( acosval < -1):
+            acosval = -1
+        if( acosval > 1 ):
+            acosval = 1
+        theta = math.acos(acosval)
+        return theta

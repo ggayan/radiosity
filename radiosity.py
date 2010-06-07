@@ -4,12 +4,14 @@ from OpenGL.GLU import *
 from numpy import *
 import sys
 import math
+import time
 
 from patch import *
 from punto import *
 from functions import *
 
 windowId = -1
+
 
 #parametros del punto de vista
 # punto de vista inicial
@@ -59,6 +61,9 @@ YZ_reflectance_red = 0.2
 YZ_reflectance_green = 0.2
 YZ_reflectance_blue = 1.0
 
+FormFactors = None
+Visibilidad = None
+
 #lista completa de los parches
 patchesList = []
 
@@ -66,6 +71,8 @@ patchesList = []
 lightsList = []
 
 def init(width, height):              
+    global FormFactors
+    global Visibilidad
     
     #llamo la funcion que genera los planos
     generarPlanos()
@@ -76,7 +83,17 @@ def init(width, height):
     # ajuste de parametros de luz
     cambiarLuminosidad()
     
+    FormFactors = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
+    Visibilidad = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
+    
+    ITIME = time.time()
+    print "Computar Visibilidades"
+    computeVisibilidad()
+    print "OK visibilidades, computar FormFactors"
+    computeFormFactors()
+    print "OK FormFactors"
     passIteration(5)
+    print "segundos= ",time.time()-ITIME
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -250,16 +267,42 @@ def cambiarLuminosidad():
         light.emmision_red = INITINTEN+INTENSITY  #emisividad roja
         light.emmision_green = INITINTEN+INTENSITY  #emisividad verde
         light.emmision_blue = INITINTEN+INTENSITY  #emisividad azul
-        
+  
+def computeVisibilidad():
+    global Visibilidad
+    for x in range(0,len(patchesList)):
+        for y in range(0,x+1):
+            if(x == y):
+                Visibilidad[x][y] = 1
+            else:
+                Visibilidad[x][y] = visibility(patchesList[x],patchesList[y],patchesList)
+def getVisibilidad(i,j):
+    if(Visibilidad[i][j] == -1):
+        return Visibilidad[j][i]
+    else:
+        return Visibilidad[i][j]
+            
+def computeFormFactors():
+    global FormFactors
+    for x in range(0,len(patchesList)):
+        for y in range(0,len(patchesList)):
+            FormFactors[x][y] = formfactor(patchesList[x],patchesList[y],getVisibilidad(x,y))
+
+def getFormFactor(i,j):
+    if(FormFactors[i][j] == -1):
+        return FormFactors[j][i]
+    else:
+        return FormFactors[i][j]
+       
 def passIteration(iterations):
     for x in xrange(0,iterations):
         # calculo de luz incidente en cada parche
-        for patch_1 in patchesList:
+        for index_x, patch_1 in enumerate(patchesList):
             aux_r = 0
             aux_g = 0
             aux_b = 0
-            for patch_2 in patchesList:
-                ff = formfactor(patch_1, patch_2, patchesList)
+            for index_y, patch_2 in enumerate(patchesList):
+                ff = getFormFactor(index_x, index_y)
                 aux_r = aux_r + patch_2.excident_red * ff
                 aux_g = aux_g + patch_2.excident_green * ff
                 aux_b = aux_b + patch_2.excident_blue * ff
@@ -361,6 +404,7 @@ def main(): #Nuestra funcion principal
     glutIdleFunc(DrawGLScene)
     glutReshapeFunc (ReSizeGLScene)
     glutKeyboardFunc (keyPressed)
+    
     init(WIDTH, HEIGHT)
 
     # Loop infinito
