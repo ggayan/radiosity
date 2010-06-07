@@ -38,37 +38,42 @@ def sistema(a,b):
 # recibe dos parches, y determina el factor de visibilidad entre los centros de ambos (valor 0 o 1)
 def visibility(p_i,p_j,PL):
     global patchesList
+    rvalue = 1
     patchesList = PL
-    # global counter
-    # centros de p_, p_j
-    ci = p_i.center
-    cj = p_j.center
-    # counter = counter + 1
-    # print "vis ",counter
-    #  PARA CADA PARCHE P EN LA ESCENA
-    for x in range(0,len(patchesList)):
-        p = patchesList[x]
-        cp = p.center
-    #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
-        v = cp.resta(ci,1)
-        w = cj.resta(ci,1)
-        if( v.modulo() == 0 or w.modulo() == 0):
-            return 1
-        theta = v.anguloEntre(w)
-    #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
-        d = math.sin(theta) * v.modulo()
-    #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
-        dm = p.pradio
-    #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
-        alpha = p.normal.anguloEntre(w)
-    #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
-        dd = dm*math.cos(alpha)
-    #     SI D < DD => RECTA ATRAVIESA PARCHE
-    #        RETURN 0
-        if( d < dd ):
-            return 0
+    # # global counter
+    # # centros de p_, p_j
+    # ci = p_i.center
+    # cj = p_j.center
+    # # counter = counter + 1
+    # # print "vis ",counter
+    # #  PARA CADA PARCHE P EN LA ESCENA
+    # for x in range(0,len(patchesList)):
+    #     p = patchesList[x]
+    #     cp = p.center
+    # #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
+    #     v = cp.resta(ci,1)
+    #     w = cj.resta(ci,1)
+    #     if( v.modulo() == 0 or w.modulo() == 0):
+    #         return 1
+    #     theta = v.anguloEntre(w)
+    # #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
+    #     d = math.sin(theta) * v.modulo()
+    # #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
+    #     dm = p.pradio
+    #     dmm = p.pmradio
+    # #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
+    #     alpha = p.normal.anguloEntre(w)
+    # #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
+    #     dd = dm*math.cos(alpha)
+    #     ddm = dmm*math.cos(alpha)
+    # #     SI D < DD => RECTA ATRAVIESA PARCHE
+    # #        RETURN 0
+    #     if( d < ddm ):
+    #         return 0
+    #     elif(d < dd):
+    #         rvalue = 0.8
         # FIN DEL LOOP
     
     #  RETURN 1
-    return 1
+    return rvalue
 

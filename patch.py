@@ -28,7 +28,7 @@ class Patch:
         self.center = self._center()
         self.area = self._area()
         self.pradio = self._pradio()
-
+        self.pmradio = self._pmradio()
     #retorna el baricentro del parche
     def _center(self):
         #x = (self.p1.x + self.p2.x + self.p3.x) / 3
@@ -77,3 +77,10 @@ class Patch:
         d2 = self.center.resta(self.p2,1).modulo()
         d3 = self.center.resta(self.p3,1).modulo()
         return max(d1,d2,d3)
+        
+    # retorna el radio de la circunferencia inscrita
+    def _pmradio(self):
+        d1 = self.center.resta(self.p1,1).modulo()
+        d2 = self.center.resta(self.p2,1).modulo()
+        d3 = self.center.resta(self.p3,1).modulo()
+        return min(d1,d2,d3)

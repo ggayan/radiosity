@@ -67,3 +67,7 @@ class Punto:
             acosval = 1
         theta = math.acos(acosval)
         return theta
+    
+    def normalizar(self):
+        mod = self.modulo()
+        return Punto(self.x/mod , self.y/mod , self.z/mod)

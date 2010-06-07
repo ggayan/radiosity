@@ -9,6 +9,7 @@ import time
 from patch import *
 from punto import *
 from functions import *
+from cuerpos import *
 
 windowId = -1
 
@@ -42,23 +43,23 @@ HEIGHT = 600
 SECTIONS = 8 #numero de triangulos por columna de un plano
 
 # intensidad de fuentes luminosas
-INITINTEN = 50.0
+INITINTEN = 500.0
 INTENSITY = 1
 
 # variables de los planos
-size = 5.0
+size = 7.0
 step = size / SECTIONS
 
-XY_reflectance_red = 0.2
+XY_reflectance_red = 0.4
 XY_reflectance_green = 1.0
-XY_reflectance_blue = 0.2
+XY_reflectance_blue = 0.4
 
 XZ_reflectance_red = 1.0
-XZ_reflectance_green = 0.2
-XZ_reflectance_blue = 0.2
+XZ_reflectance_green = 0.6
+XZ_reflectance_blue = 0.6
 
-YZ_reflectance_red = 0.2
-YZ_reflectance_green = 0.2
+YZ_reflectance_red = 0.8
+YZ_reflectance_green = 0.8
 YZ_reflectance_blue = 1.0
 
 FormFactors = None
@@ -73,9 +74,13 @@ lightsList = []
 def init(width, height):              
     global FormFactors
     global Visibilidad
+    ITIME = time.time()
     
     #llamo la funcion que genera los planos
     generarPlanos()
+    
+    #llamo a la funcion que aniade cuerpos a la escena
+    generarCuerpos()
     
     # generamos las fuentes luminosas
     aniadirFuentesLuminosas()
@@ -86,13 +91,12 @@ def init(width, height):
     FormFactors = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
     Visibilidad = [[-1 for col in range(0,len(patchesList))] for row in range(len(patchesList))]
     
-    ITIME = time.time()
     print "Computar Visibilidades"
     computeVisibilidad()
     print "OK visibilidades, computar FormFactors"
     computeFormFactors()
     print "OK FormFactors"
-    passIteration(5)
+    passIteration(40)
     print "segundos= ",time.time()-ITIME
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
@@ -247,12 +251,25 @@ def generarPlanos():
         z0 += step
         y0 = 0
 
+# funcion que llama a los metodos de cuerpos.py
+def generarCuerpos():
+    global patchesList
+    patchesList.extend( patchesIcosaedro(1 , 1 , 2 , 0.4, 0) )
+    patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
+
 def aniadirFuentesLuminosas():
     global patchesList
     global lightsList
     
-    fuente1 = Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0))
+    # fuente1 = Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0))
+    fuente1 = Patch(Punto(4.7,4.3,4.3),Punto(4.3,4.7,4.3),Punto(4.3,4.3,4.7))
     fuente2 = Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4))
+    
+    # bloqueo1 = Patch(Punto(2.0,2.0,2.0),Punto(2.0,2.0,1.5),Punto(2.5,1.5,2.0))
+    # bloqueo1.reflectance_red = 0.2
+    # bloqueo1.reflectance_green = 0.2
+    # bloqueo1.reflectance_blue = 0.2
+    # patchesList.append(bloqueo1)
     
     lightsList.append(fuente1)
     lightsList.append(fuente2)
