@@ -276,6 +276,7 @@ def computeVisibilidad():
                 Visibilidad[x][y] = 1
             else:
                 Visibilidad[x][y] = visibility(patchesList[x],patchesList[y],patchesList)
+
 def getVisibilidad(i,j):
     if(Visibilidad[i][j] == -1):
         return Visibilidad[j][i]
@@ -284,9 +285,9 @@ def getVisibilidad(i,j):
             
 def computeFormFactors():
     global FormFactors
-    for x in range(0,len(patchesList)):
-        for y in range(0,len(patchesList)):
-            FormFactors[x][y] = formfactor(patchesList[x],patchesList[y],getVisibilidad(x,y))
+    for x, patch_1 in enumerate(patchesList):
+        for y, patch_2 in enumerate(patchesList):
+            FormFactors[x][y] = formfactor(patch_1, patch_2, getVisibilidad(x,y))
 
 def getFormFactor(i,j):
     if(FormFactors[i][j] == -1):
