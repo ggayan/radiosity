@@ -47,8 +47,7 @@ def visibility(p_i,p_j,PL):
     # counter = counter + 1
     # print "vis ",counter
     #  PARA CADA PARCHE P EN LA ESCENA
-    for x in range(0,len(patchesList)):
-        p = patchesList[x]
+    for p in patchesList:
         cp = p.center
     #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
         v = cp.resta(ci,1)
