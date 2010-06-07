@@ -2,10 +2,8 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from numpy import *
-import time
 import sys
 import math
-import random
 
 from patch import *
 from punto import *
@@ -39,44 +37,45 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 16 #numero de triangulos por columna de un plano
+SECTIONS = 8 #numero de triangulos por columna de un plano
 
 # intensidad de fuentes luminosas
 INITINTEN = 50.0
 INTENSITY = 1
 
-#las filas tienen la mitad de secciones
+# variables de los planos
+size = 5.0
+step = size / SECTIONS
 
-#planos, son arreglos dobles
-planoXY = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
-planoYZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
-planoXZ = [[0 for col in range(SECTIONS)] for row in range(SECTIONS / 2)]
+XY_reflectance_red = 0.2
+XY_reflectance_green = 1.0
+XY_reflectance_blue = 0.2
+
+XZ_reflectance_red = 1.0
+XZ_reflectance_green = 0.2
+XZ_reflectance_blue = 0.2
+
+YZ_reflectance_red = 0.2
+YZ_reflectance_green = 0.2
+YZ_reflectance_blue = 1.0
 
 #lista completa de los parches
 patchesList = []
-# radiosity rojo
-dataMatrixRed = zeros( (len(patchesList),len(patchesList)) )
-emsVectorRed = zeros(len(patchesList))
-BVectorRed = zeros(len(patchesList))
-# radiosity verde
-dataMatrixGreen = zeros( (len(patchesList),len(patchesList)) )
-emsVectorGreen = zeros(len(patchesList))
-BVectorGreen = zeros(len(patchesList))
-# radiosity azul
-dataMatrixBlue = zeros( (len(patchesList),len(patchesList)) )
-emsVectorBlue = zeros(len(patchesList))
-BVectorBlue = zeros(len(patchesList))
 
-ajusteRadiosity = 1 #el ajuste por el que se dividira el BVectorRed
+#lista de luces
+lightsList = []
 
 def init(width, height):              
     
     #llamo la funcion que genera los planos
     generarPlanos()
     
-    generarListaDeParches()
+    # generamos las fuentes luminosas
+    aniadirFuentesLuminosas()
     
-    # generarMatrizRadiosity()
+    # ajuste de parametros de luz
+    cambiarLuminosidad()
+    
     passIteration(5)
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
@@ -136,12 +135,6 @@ def escenario():
     
 #funcion que genera los planos a dibujar
 def generarPlanos():
-    global planoXY
-    global planoXZ
-    global planoYZ
-    
-    size = 5.0
-    step = size / SECTIONS
     
     #planoXY
     x0 = 0
@@ -149,24 +142,29 @@ def generarPlanos():
     
     for i in range(0, SECTIONS / 2): #eje horizonal
         for j in range(0, SECTIONS): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
             if j % 2 == 0: #pares
                 p1 = Punto(x0, y0, 0)
                 p2 = Punto(x0 + step, y0, 0)
                 p3 = Punto(x0, y0 + step, 0)
-                planoXY[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
                 p1 = Punto(x0, y0 + step, 0)
                 p2 = Punto(x0 + step, y0, 0)
                 p3 = Punto(x0 + step, y0 + step, 0)
-                planoXY[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
                 y0 += step
                 
-            planoXY[i][j].coords = 'XY'
+            patch.coords = 'XY'
                             
-            planoXY[i][j].rr = 1.0
-            planoXY[i][j].rg = 1.0
-            planoXY[i][j].rb = 1.0
+            patch.reflectance_red = XY_reflectance_red
+            patch.reflectance_green = XY_reflectance_green
+            patch.reflectance_blue = XY_reflectance_blue
+            # asocio el parche recien creado a la lista
+            patchesList.append(patch)
         x0 += step
         y0 = 0
     
@@ -176,23 +174,28 @@ def generarPlanos():
     
     for i in range(0, SECTIONS / 2): #eje horizonal
         for j in range(0, SECTIONS): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
             if j % 2 == 0: #pares
                 p1 = Punto(x0, 0, z0)
                 p2 = Punto(x0, 0, z0 + step)
                 p3 = Punto(x0 + step, 0, z0)
-                planoXZ[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
                 p1 = Punto(x0, 0, z0 + step)
                 p2 = Punto(x0 + step, 0, z0 + step)
                 p3 = Punto(x0 + step, 0, z0)
-                planoXZ[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
                 z0 += step
                 
-            planoXZ[i][j].coords = 'XZ'
-            planoXZ[i][j].rr = 1.0
-            planoXZ[i][j].rg = 0.0
-            planoXZ[i][j].rb = 0.0
+            patch.coords = 'XZ'
+            patch.reflectance_red = XZ_reflectance_red
+            patch.reflectance_green = XZ_reflectance_green
+            patch.reflectance_blue = XZ_reflectance_blue
+            # asocio el parche recien creado a la lista
+            patchesList.append(patch)
         x0 += step
         z0 = 0
         
@@ -202,131 +205,80 @@ def generarPlanos():
     
     for i in range(0, SECTIONS / 2): #eje horizonal
         for j in range(0, SECTIONS): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
             if j % 2 == 0: #pares
                 p1 = Punto(0, y0, z0)
                 p2 = Punto(0, y0 + step, z0)
                 p3 = Punto(0, y0, z0 + step)
-                planoYZ[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
             else:
                 #segundo triangulo
                 p1 = Punto(0, y0 + step, z0)
                 p2 = Punto(0, y0 + step, z0 + step)
                 p3 = Punto(0, y0, z0 + step)
-                planoYZ[i][j] = Patch(p1, p2, p3)
+                patch = Patch(p1, p2, p3)
                 y0 += step
                 
-            planoYZ[i][j].coords = 'YZ'
-            planoYZ[i][j].rr = 0.0
-            planoYZ[i][j].rg = 0.0
-            planoYZ[i][j].rb = 1.0
+            patch.coords = 'YZ'
+            patch.reflectance_red = YZ_reflectance_red
+            patch.reflectance_green = YZ_reflectance_green
+            patch.reflectance_blue = YZ_reflectance_blue
+            # asocio el parche recien creado a la lista
+            patchesList.append(patch)
         z0 += step
         y0 = 0
-        
-def generarListaDeParches():
-    global patchesList
-    for i in range(0, SECTIONS / 2): #filas
-        patchesList.extend(planoXY[i])
-        patchesList.extend(planoXZ[i])
-        patchesList.extend(planoYZ[i])
-    
-    aniadirFuentesLuminosa(patchesList)
-    for x in range(1,len(patchesList)):
-        patchesList[x].cr = patchesList[x].er
-        patchesList[x].cg = patchesList[x].eg
-        patchesList[x].cb = patchesList[x].eb
 
-def aniadirFuentesLuminosa(pat_list):
-    global totalLuces
+def aniadirFuentesLuminosas():
+    global patchesList
+    global lightsList
     
-    # aniado fuentes luminosas al final de la lista
-    pat_list.append(Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0)))
-    pat_list.append(Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4)))
-    totalLuces = 2
-    cambiarLuminosidad()
+    fuente1 = Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0))
+    fuente2 = Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4))
+    
+    lightsList.append(fuente1)
+    lightsList.append(fuente2)
+    
+    # las amarramos a la lista de parches
+    patchesList.extend(lightsList)
 
 def cambiarLuminosidad():
-    for x in range(0,totalLuces):
-        patchesList[len(patchesList)-1-x].er = INITINTEN+INTENSITY  #emisividad roja
-        patchesList[len(patchesList)-1-x].eg = INITINTEN+INTENSITY  #emisividad verde
-        patchesList[len(patchesList)-1-x].eb = INITINTEN+INTENSITY  #emisividad azul
+    global lightsList
+    
+    for light in lightsList:
+        light.emmision_red = INITINTEN+INTENSITY  #emisividad roja
+        light.emmision_green = INITINTEN+INTENSITY  #emisividad verde
+        light.emmision_blue = INITINTEN+INTENSITY  #emisividad azul
         
 def passIteration(iterations):
     for x in xrange(0,iterations):
         # calculo de luz incidente en cada parche
-        for x in range(0,len(patchesList)):
+        for patch_1 in patchesList:
             aux_r = 0
             aux_g = 0
             aux_b = 0
-            for y in range(0,len(patchesList)):
-                ff = formfactor(patchesList[x],patchesList[y],patchesList)
-                aux_r = aux_r + patchesList[y].cr * ff
-                aux_g = aux_g + patchesList[y].cg * ff
-                aux_b = aux_b + patchesList[y].cb * ff
-            patchesList[x].ir = aux_r
-            patchesList[x].ig = aux_g
-            patchesList[x].ib = aux_b
+            for patch_2 in patchesList:
+                ff = formfactor(patch_1, patch_2, patchesList)
+                aux_r = aux_r + patch_2.excident_red * ff
+                aux_g = aux_g + patch_2.excident_green * ff
+                aux_b = aux_b + patch_2.excident_blue * ff
+            patch_1.incident_red = aux_r
+            patch_1.incident_green = aux_g
+            patch_1.incident_blue = aux_b
             
         # calculo de luz excedente (color) de cada parche
-        for x in range(0,len(patchesList)):
-            patchesList[x].cr = patchesList[x].er + ( patchesList[x].ir * patchesList[x].rr )
-            patchesList[x].cg = patchesList[x].eg + ( patchesList[x].ig * patchesList[x].rg )
-            patchesList[x].cb = patchesList[x].eb + ( patchesList[x].ib * patchesList[x].rb )
-    
-def generarMatrizRadiosity():
-    global BVectorRed
-    global BVectorGreen
-    global BVectorBlue
-    global ajusteRadiosiy
-    
-    # calculo radiosity ROJO    
-    dataMatrixRed = zeros((len(patchesList),len(patchesList)))
-    emsVectorRed = zeros(len(patchesList))
-    # calculo radiosity VERDE    
-    dataMatrixGreen = zeros((len(patchesList),len(patchesList)))
-    emsVectorGreen = zeros(len(patchesList))
-    # calculo radiosity AZUL   
-    dataMatrixBlue = zeros((len(patchesList),len(patchesList)))
-    emsVectorBlue = zeros(len(patchesList))
-    
-    for p in range(0,len(patchesList)):
-        for q in range(0,len(patchesList)):
-            p1 = patchesList[p]
-            p2 = patchesList[q]
-            ff = formfactor(p1,p2)
-            rhor = p1.rr
-            rhov = p1.rg
-            rhob = p1.rb
-            if p==q:
-                dataMatrixRed[p,q] = 1-rhor*ff
-                dataMatrixGreen[p,q] = 1-rhov*ff
-                dataMatrixBlue[p,q] = 1-rhob*ff
-            else:
-                dataMatrixRed[p,q] = -rhor*ff
-                dataMatrixGreen[p,q] = -rhov*ff
-                dataMatrixBlue[p,q] = -rhob*ff
-            emsVectorRed[p] = p1.er
-            emsVectorGreen[p] = p1.eg
-            emsVectorBlue[p] = p1.eb
-    BVectorRed = sistema(dataMatrixRed,emsVectorRed) / ajusteRadiosity
-    BVectorGreen = sistema(dataMatrixGreen,emsVectorGreen) / ajusteRadiosity
-    BVectorBlue = sistema(dataMatrixBlue,emsVectorBlue) / ajusteRadiosity
-    for x in range(0,len(patchesList)):
-        patchesList[x].cr = BVectorRed[x]
-        patchesList[x].cg = BVectorGreen[x]
-        patchesList[x].cb = BVectorBlue[x]
-    
+        for patch in patchesList:
+            patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
+            patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
+            patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
 
 def dibujarListaParches():
-    for i in range(0, len(patchesList)):
+    for patch in patchesList:
         #if patchesList[i].coords == 'XY':
         # glColor(1.0 * BVectorRed[i],1.0 * BVectorGreen[i], 1.0 * BVectorBlue[i])
-        glColor(patchesList[i].cr, patchesList[i].cg, patchesList[i].cb)
-        patchesList[i].dibujar()
-
-def dibujarPlano(plano):
-    for i in range(0, SECTIONS / 2): #filas
-        for j in range(0, SECTIONS): #columnas
-            plano[i][j].dibujar()
+        glColor(patch.excident_red, patch.excident_green, patch.excident_blue)
+        patch.draw()
     
 def axis():
     axsize = 1

@@ -4,32 +4,33 @@ import math
 #implementado como triangulo
 class Patch:
 
-    rr = 0  # reflectividad roja
-    rg = 0  # reflectividad verde
-    rb = 0  # reflectividad azul
+    reflectance_red = 0  # reflectividad roja
+    reflectance_green = 0  # reflectividad verde
+    reflectance_blue = 0  # reflectividad azul
     
-    er = 0  # emisividad roja
-    eg = 0  # emisividad verde
-    eb = 0  # emisividad azul
+    emmision_red = 0  # emisividad roja
+    emmision_green = 0  # emisividad verde
+    emmision_blue = 0  # emisividad azul
     
-    cr = 0  # color (luz excedente) roja
-    cg = 0  # color (luz excedente) verde
-    cb = 0  # color (luz excedente) azul
+    excident_red = 0  # color (luz excedente) roja
+    excident_green = 0  # color (luz excedente) verde
+    excident_blue = 0  # color (luz excedente) azul
     
-    ir = 0  # luz incidente roja
-    ig = 0  # luz incidente verde
-    ib = 0  # luz incidente azul
+    incident_red = 0  # luz incidente roja
+    incident_green = 0  # luz incidente verde
+    incident_blue = 0  # luz incidente azul
 
     def __init__(self,p1,p2,p3):
         self.p1 = p1
         self.p2 = p2
         self.p3 = p3
-        self.nr = self.normal()
-        self.cn = self.center()
-        self.ar = self.area()
+        self.normal = self._normal()
+        self.center = self._center()
+        self.area = self._area()
+        self.pradio = self._pradio()
 
     #retorna el baricentro del parche
-    def center(self):
+    def _center(self):
         #x = (self.p1.x + self.p2.x + self.p3.x) / 3
         #y = (self.p1.y + self.p2.y + self.p3.y) / 3
         #z = (self.p1.z + self.p2.z + self.p3.z) / 3
@@ -38,7 +39,7 @@ class Patch:
         return self.p1.suma(self.p2.suma(self.p3,1),3) # == (p1 + ((p2 + p3) / 1)) / 3
         
     #no es necesario normalizar, basta la direccion
-    def normal(self):
+    def _normal(self):
         b_menos_a = self.p2.resta(self.p1, 1) # == (p2 - p1) / 1
         c_menos_a = self.p3.resta(self.p1, 1) # == (p3 - p1) / 1
         cruz = b_menos_a.cruz(c_menos_a)
@@ -49,7 +50,7 @@ class Patch:
         
         return cruz
     
-    def area(self):
+    def _area(self):
         p1 = self.p1
         p2 = self.p2
         p3 = self.p3
@@ -62,7 +63,7 @@ class Patch:
         return math.sqrt(s*(s-lado1)*(s-lado2)*(s-lado3))
     
     #atajo para dibujar cada patch
-    def dibujar(self):
+    def draw(self):
         p1 = self.p1
         p2 = self.p2
         p3 = self.p3
@@ -71,8 +72,8 @@ class Patch:
         glVertex3f(p3.x, p3.y, p3.z)
         
     # retorna el radio de la circunferencia circunscrita
-    def pradio(self):
-        d1 = self.cn.resta(self.p1,1).modulo()
-        d2 = self.cn.resta(self.p2,1).modulo()
-        d3 = self.cn.resta(self.p3,1).modulo()
+    def _pradio(self):
+        d1 = self.center.resta(self.p1,1).modulo()
+        d2 = self.center.resta(self.p2,1).modulo()
+        d3 = self.center.resta(self.p3,1).modulo()
         return max(d1,d2,d3)

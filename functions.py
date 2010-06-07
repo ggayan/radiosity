@@ -12,16 +12,16 @@ def formfactor(p_i,p_j,PL):
     #       http://wiki.cgsociety.org/index.php/Radiosity#Form_Factor_Determination
     #
     # F_ij = [(cos thetai * cos thetaj)/pi*r^2]*H_ij*dAj
-    c_i = p_i.cn
-    c_j = p_j.cn
-    n_i = p_i.nr
-    n_j = p_j.nr
+    c_i = p_i.center
+    c_j = p_j.center
+    n_i = p_i.normal
+    n_j = p_j.normal
     d_ij = Punto(c_i.x-c_j.x, c_i.y-c_j.y, c_i.z-c_j.z)
     
     r = math.sqrt(math.pow(c_i.x-c_j.x,2)+math.pow(c_i.y-c_j.y,2)+math.pow(c_i.z-c_j.z,2)) #centro p_i, p_j
     if r==0:
         return 0
-    dAj = p_j.ar
+    dAj = p_j.area
     H_ij = visibility(p_i,p_j)  # en este caso, todos los parches son visibles para todos (no hay obstaculos)
     
     #cosenos segun http://www.geoan.com/vectores/angulo.html
@@ -39,14 +39,14 @@ def sistema(a,b):
 def visibility(p_i,p_j):
     global counter
     # centros de p_, p_j
-    ci = p_i.cn
-    cj = p_j.cn
+    ci = p_i.center
+    cj = p_j.center
     # counter = counter + 1
     # print "vis ",counter
     #  PARA CADA PARCHE P EN LA ESCENA
     for x in range(0,len(patchesList)):
         p = patchesList[x]
-        cp = p.cn
+        cp = p.center
     #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
         v = cp.resta(ci,1)
         w = cj.resta(ci,1)
@@ -61,7 +61,7 @@ def visibility(p_i,p_j):
     #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
         d = math.sin(theta) * v.modulo()
     #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
-        dm = p.pradio()
+        dm = p.pradio
     #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
     #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
     #     SI D < DD => RECTA ATRAVIESA PARCHE
