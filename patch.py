@@ -80,7 +80,10 @@ class Patch:
         
     # retorna el radio de la circunferencia inscrita
     def _pmradio(self):
-        d1 = self.center.resta(self.p1,1).modulo()
-        d2 = self.center.resta(self.p2,1).modulo()
-        d3 = self.center.resta(self.p3,1).modulo()
-        return min(d1,d2,d3)
+        d1 = self.p2.resta(self.p1,1).modulo()
+        d2 = self.p3.resta(self.p2,1).modulo()
+        d3 = self.p1.resta(self.p3,1).modulo()
+        s = ( d1 + d2 + d3)/2
+        return math.sqrt(((s-d1)*(s-d2)*(s-d3))/(s))
+    
+    
