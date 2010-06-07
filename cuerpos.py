@@ -1,7 +1,7 @@
 from punto import *
 from patch import *
 
-def patchesIcosaedro(tx,ty,tz,w, lum):
+def patchesIcosaedro(tx,ty,tz,w, lum, color):
     puntos = [Punto(tx+w*0.000000, ty+w*0.000000, tz+w*-1.000000),
                  Punto(tx+w* 0.723600 , ty+w*-0.525720 , tz+w*-0.447215),
                  Punto(tx+w*-0.276385 , ty+w*-0.850640 , tz+w*-0.447215),
@@ -37,18 +37,18 @@ def patchesIcosaedro(tx,ty,tz,w, lum):
     
     for x in range(0,len(patches)):
         patch = patches[x]
-        patch.reflectance_red = 0.3
-        patch.reflectance_green = 0.9
-        patch.reflectance_blue = 0.3
+        patch.reflectance_red = color[0]
+        patch.reflectance_green = color[1]
+        patch.reflectance_blue = color[2]
         
         patch.emmision_red = lum
         patch.emmision_green = lum
         patch.emmision_blue = lum
-        patch.normal = (patch.center.resta(Punto(tx,ty,tz),1)).normalizar()
+        # patch.normal = (patch.center.resta(Punto(tx,ty,tz),1)).normalizar()
     
     return patches
     
-def patchesIcosaedro_2(tx,ty,tz,w, lum):
+def patchesIcosaedro_2(tx,ty,tz,w, lum, color):
     puntos =   [
                  Punto(tx+w*0.000000 , ty+w*0.000000, ty+w* -1.000000),
 				 Punto(tx+w*0.723600 , ty+w*-0.525720, ty+w* -0.447215),
@@ -178,9 +178,9 @@ def patchesIcosaedro_2(tx,ty,tz,w, lum):
     
     for x in range(0,len(patches)):
         patch = patches[x]
-        patch.reflectance_red = 0.3
-        patch.reflectance_green = 0.4
-        patch.reflectance_blue = 0.3
+        patch.reflectance_red = color[0]
+        patch.reflectance_green = color[1]
+        patch.reflectance_blue = color[2]
         
         patch.emmision_red = lum
         patch.emmision_green = lum
@@ -192,7 +192,7 @@ def patchesIcosaedro_2(tx,ty,tz,w, lum):
     
     return patches
     
-def patchesCubo(tx,ty,tz,w,lum):
+def patchesCubo(tx,ty,tz,w,lum, color):
     puntos = [  Punto(tx+w* 0.005020 , ty+w* 0.005368 , tz+w*-0.467305),
                  Punto(tx+w* 0.705485 , ty+w*-0.493011 , tz+w*-0.468423),
                  Punto(tx+w*-0.695622 , ty+w*-0.492753 , tz+w*-0.468423),
@@ -227,13 +227,23 @@ def patchesCubo(tx,ty,tz,w,lum):
                  Patch( puntos[10] , puntos[9 ], puntos[11]) ]
                  
     for patch in patches:
-        patch.reflectance_red = 0.3
-        patch.reflectance_green = 0.9
-        patch.reflectance_blue = 0.3
+        patch.reflectance_red = color[0]
+        patch.reflectance_green = color[1]
+        patch.reflectance_blue = color[2]
         
         patch.emmision_red = lum
         patch.emmision_green = lum
         patch.emmision_blue = lum
+        
+        centro = Punto(tx,ty,tz)
+        vec_cen_pat = patch.center.resta(centro,1)
+        vec_norm = patch.normal
+        theta = vec_norm.anguloEntre(vec_norm)
+        if( abs(theta) > math.pi/2):
+            patch.normal.x *= -1
+            patch.normal.y *= -1
+            patch.normal.z *= -1
+            
         #patch.normal = (patch.center.resta(Punto(tx,ty,tz),1)).normalizar()
     
     return patches

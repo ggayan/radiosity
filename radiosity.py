@@ -195,9 +195,10 @@ def generarPlanos():
 # funcion que llama a los metodos de cuerpos.py
 def generarCuerpos():
     global patchesList
-    #patchesList.extend( patchesIcosaedro(1 , 1 , 2 , 0.4, 0) )
-    patchesList.extend( patchesIcosaedro_2(1 , 1 , 2 , 0.4, 0) )
-    patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
+    patchesList.extend( patchesIcosaedro_2(2 , 3 , 1.5 , 0.4, 0, [0.3,0.9,0.3]) )
+    patchesList.extend( patchesIcosaedro_2(2 , 2 , 4 , 0.4, 0, [0.5,0.2,0.4]) )
+    patchesList.extend( patchesIcosaedro_2(2 , 1 , 1 , 0.4, 0, [0.4,0.3,0.9]) )
+    # patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
 
 def aniadirFuentesLuminosas():
     global patchesList
@@ -214,7 +215,7 @@ def aniadirFuentesLuminosas():
     # patchesList.append(bloqueo1)
     
     lightsList.append(fuente1)
-    lightsList.append(fuente2)
+    # lightsList.append(fuente2)
     
     # las amarramos a la lista de parches
     patchesList.extend(lightsList)
@@ -246,7 +247,7 @@ def computeFormFactors():
     global FormFactors
     for x, patch_1 in enumerate(patchesList):
         for y, patch_2 in enumerate(patchesList):
-            FormFactors[x][y] = 2.0 * formfactor(patch_1, patch_2, getVisibilidad(x,y))
+            FormFactors[x][y] = formfactor(patch_1, patch_2, getVisibilidad(x,y))
 
 def getFormFactor(i,j):
     if(FormFactors[i][j] == -1):

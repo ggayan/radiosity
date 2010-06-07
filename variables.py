@@ -26,7 +26,7 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 8 #numero de triangulos por columna de un plano
+SECTIONS = 12 #numero de triangulos por columna de un plano
 
 # intensidad de fuentes luminosas
 INITINTEN = 300.0

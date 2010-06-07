@@ -70,7 +70,7 @@ def visibility(p_i,p_j,PL):
         if( d < ddm ):
             return 0
         elif(d < dd):
-            rvalue = 0.8
+            rvalue = 0.5
         # FIN DEL LOOP
     
     #  RETURN 1
