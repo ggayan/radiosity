@@ -36,8 +36,9 @@ def init(width, height):
     computeVisibilidad()
     print "OK visibilidades, computar FormFactors"
     computeFormFactors()
-    print "OK FormFactors"
-    passIteration(40)
+    print "OK FormFactors, calcular iteraciones"
+    # passIteration(40)
+    RadiosityIteration(1)
     print "segundos= ",time.time()-ITIME
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
@@ -91,7 +92,7 @@ def DrawGLScene():
 #las figuras a dibujar
 def escenario():
     
-    glBegin(GL_TRIANGLES)
+    glBegin(GL_QUADS)
     dibujarListaParches()
     glEnd()
     
@@ -102,26 +103,21 @@ def generarPlanos():
     x0 = 0
     y0 = 0
     
-    for i in range(0, SECTIONS / 2): #eje horizonal
-        for j in range(0, SECTIONS): #eje vertical
+    iterations = (int)(SECTIONS*size)
+    
+    for i in range(0, iterations): #eje horizonal
+        for j in range(0, iterations): #eje vertical
             
             patch = None # variable temporal para cada patch
             
-            if j % 2 == 0: #pares
-                p1 = Punto(x0, y0, 0)
-                p2 = Punto(x0 + step, y0, 0)
-                p3 = Punto(x0, y0 + step, 0)
-                patch = Patch(p1, p2, p3)
-            else:
-                #segundo triangulo
-                p1 = Punto(x0, y0 + step, 0)
-                p2 = Punto(x0 + step, y0, 0)
-                p3 = Punto(x0 + step, y0 + step, 0)
-                patch = Patch(p1, p2, p3)
-                y0 += step
+            p1 = Punto(x0, y0, 0)
+            p2 = Punto(x0 + step, y0, 0)
+            p3 = Punto(x0, y0 + step, 0)
+            p4 = Punto(x0 + step, y0 + step, 0)
+            patch = Patch(p1, p2, p4, p3)
+            y0 += step
                 
             patch.coords = 'XY'
-                            
             patch.reflectance_red = XY_reflectance_red
             patch.reflectance_green = XY_reflectance_green
             patch.reflectance_blue = XY_reflectance_blue
@@ -134,23 +130,17 @@ def generarPlanos():
     x0 = 0
     z0 = 0
     
-    for i in range(0, SECTIONS / 2): #eje horizonal
-        for j in range(0, SECTIONS): #eje vertical
+    for i in range(0, iterations): #eje horizonal
+        for j in range(0, iterations): #eje vertical
             
             patch = None # variable temporal para cada patch
             
-            if j % 2 == 0: #pares
-                p1 = Punto(x0, 0, z0)
-                p2 = Punto(x0, 0, z0 + step)
-                p3 = Punto(x0 + step, 0, z0)
-                patch = Patch(p1, p2, p3)
-            else:
-                #segundo triangulo
-                p1 = Punto(x0, 0, z0 + step)
-                p2 = Punto(x0 + step, 0, z0 + step)
-                p3 = Punto(x0 + step, 0, z0)
-                patch = Patch(p1, p2, p3)
-                z0 += step
+            p1 = Punto(x0, 0, z0)
+            p2 = Punto(x0, 0, z0 + step)
+            p3 = Punto(x0 + step, 0, z0)
+            p4 = Punto(x0 + step, 0, z0 + step)
+            patch = Patch(p1, p2, p4, p3)
+            z0 += step
                 
             patch.coords = 'XZ'
             patch.reflectance_red = XZ_reflectance_red
@@ -165,23 +155,17 @@ def generarPlanos():
     y0 = 0
     z0 = 0
     
-    for i in range(0, SECTIONS / 2): #eje horizonal
-        for j in range(0, SECTIONS): #eje vertical
+    for i in range(0, iterations): #eje horizonal
+        for j in range(0, iterations): #eje vertical
             
             patch = None # variable temporal para cada patch
             
-            if j % 2 == 0: #pares
-                p1 = Punto(0, y0, z0)
-                p2 = Punto(0, y0 + step, z0)
-                p3 = Punto(0, y0, z0 + step)
-                patch = Patch(p1, p2, p3)
-            else:
-                #segundo triangulo
-                p1 = Punto(0, y0 + step, z0)
-                p2 = Punto(0, y0 + step, z0 + step)
-                p3 = Punto(0, y0, z0 + step)
-                patch = Patch(p1, p2, p3)
-                y0 += step
+            p1 = Punto(0, y0, z0)
+            p2 = Punto(0, y0 + step, z0)
+            p3 = Punto(0, y0, z0 + step)
+            p4 = Punto(0, y0 + step, z0 + step)
+            patch = Patch(p1, p2, p4, p3)
+            y0 += step
                 
             patch.coords = 'YZ'
             patch.reflectance_red = YZ_reflectance_red
@@ -195,9 +179,11 @@ def generarPlanos():
 # funcion que llama a los metodos de cuerpos.py
 def generarCuerpos():
     global patchesList
-    patchesList.extend( patchesIcosaedro_2(2 , 3 , 1.5 , 0.4, 0, [0.3,0.9,0.3]) )
-    patchesList.extend( patchesIcosaedro_2(2 , 2 , 4 , 0.4, 0, [0.5,0.2,0.4]) )
-    patchesList.extend( patchesIcosaedro_2(2 , 1 , 1 , 0.4, 0, [0.4,0.3,0.9]) )
+    patchesList.extend( uvsphere(2 , 3 , 1.5 , 0.4, 0, [0.9,0.5,0.5]) )
+    patchesList.extend( uvsphere(4 , 2 , 1.5 , 0.5, 0, [0.9,0.5,0.5]) )
+    # patchesList.extend( patchesIcosaedro_2(2 , 3 , 1.5 , 0.4, 0, [0.8,0.5,0.5]) )
+    # patchesList.extend( patchesIcosaedro_2(2 , 2 , 4   , 0.4, 0, [0.5,0.8,0.4]) )
+    # patchesList.extend( patchesIcosaedro_2(2 , 1 , 1   , 0.4, 0, [0.8,0.8,0.8]) )
     # patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
 
 def aniadirFuentesLuminosas():
@@ -205,8 +191,8 @@ def aniadirFuentesLuminosas():
     global lightsList
     
     # fuente1 = Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0))
-    fuente1 = Patch(Punto(4.7,4.3,4.3),Punto(4.3,4.7,4.3),Punto(4.3,4.3,4.7))
-    fuente2 = Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4))
+    fuente1 = Patch(Punto(5.5,4.0,7.0),Punto(5.5,4.5,7.0),Punto(5.0,4.5,7.0),Punto(5.0,4.0,7.0))
+    # fuente2 = Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4))
     
     # bloqueo1 = Patch(Punto(2.0,2.0,2.0),Punto(2.0,2.0,1.5),Punto(2.5,1.5,2.0))
     # bloqueo1.reflectance_red = 0.2
@@ -235,7 +221,7 @@ def computeVisibilidad():
             if(x == y):
                 Visibilidad[x][y] = 1
             else:
-                Visibilidad[x][y] = visibility(patchesList[x],patchesList[y],patchesList)
+                Visibilidad[x][y] = visibility(x,y)
 
 def getVisibilidad(i,j):
     if(Visibilidad[i][j] == -1):
@@ -247,35 +233,55 @@ def computeFormFactors():
     global FormFactors
     for x, patch_1 in enumerate(patchesList):
         for y, patch_2 in enumerate(patchesList):
-            FormFactors[x][y] = formfactor(patch_1, patch_2, getVisibilidad(x,y))
+            FormFactors[x][y] = formfactor(x, y, getVisibilidad(x,y))
 
 def getFormFactor(i,j):
     if(FormFactors[i][j] == -1):
         return FormFactors[j][i]
     else:
         return FormFactors[i][j]
-       
-def passIteration(iterations):
+
+def RadiosityIteration(iterations):
     for x in xrange(0,iterations):
-        # calculo de luz incidente en cada parche
-        for index_x, patch_1 in enumerate(patchesList):
-            aux_r = 0
-            aux_g = 0
-            aux_b = 0
-            for index_y, patch_2 in enumerate(patchesList):
-                ff = getFormFactor(index_x, index_y)
-                aux_r = aux_r + patch_2.excident_red * ff
-                aux_g = aux_g + patch_2.excident_green * ff
-                aux_b = aux_b + patch_2.excident_blue * ff
-            patch_1.incident_red = aux_r
-            patch_1.incident_green = aux_g
-            patch_1.incident_blue = aux_b
-            
+        print "iteration ",x
+        # shoot()
+        collect()
+        
+def shoot():
+    for index_x, patch_1 in enumerate(patchesList):
+        for index_y, patch_2 in enumerate(patchesList):
+            ff = getFormFactor(index_x, index_y)
+            if(ff==0):
+                continue
+            patch_2.incident_red += patch_1.excident_red * ff
+            patch_2.incident_green += patch_1.excident_green * ff
+            patch_2.incident_blue += patch_1.excident_blue * ff
         # calculo de luz excedente (color) de cada parche
-        for patch in patchesList:
-            patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
-            patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
-            patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
+    for patch in patchesList:
+        patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
+        patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
+        patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
+    
+                    
+def collect():
+    for index_x, patch_1 in enumerate(patchesList):
+        aux_r = 0
+        aux_g = 0
+        aux_b = 0
+        for index_y, patch_2 in enumerate(patchesList):
+            ff = getFormFactor(index_x, index_y)
+            aux_r = aux_r + patch_2.excident_red * ff
+            aux_g = aux_g + patch_2.excident_green * ff
+            aux_b = aux_b + patch_2.excident_blue * ff
+        patch_1.incident_red = aux_r
+        patch_1.incident_green = aux_g
+        patch_1.incident_blue = aux_b
+        
+    # calculo de luz excedente (color) de cada parche
+    for patch in patchesList:
+        patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
+        patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
+        patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
 
 def dibujarListaParches():
     for patch in patchesList:
@@ -290,7 +296,7 @@ def axis():
     glColor(1, 0, 0) #rojo = X
     glVertex3f(axsize, 0, 0)
     glVertex3f(-axsize, 0, 0)
-    glColor(0, 1, 0) #verde = Y
+    glColor(0, 1, 0) #verde = Y1
     glVertex3f(0, axsize, 0)
     glVertex3f(0, -axsize, 0)
     glColor(0, 0, 1) #azul = Z
@@ -302,6 +308,10 @@ def keyPressed(*args): #Presionar una tecla
     global VIEWPOINT_X
     global VIEWPOINT_Y
     global VIEWPOINT_Z
+    global LOOK_AT_X
+    global LOOK_AT_Y
+    global LOOK_AT_Z
+    
     global SECTIONS
     # global MINSECTIONS
     global INTENSITY
@@ -320,36 +330,62 @@ def keyPressed(*args): #Presionar una tecla
         VIEWPOINT_X = IVX
         VIEWPOINT_Y = IVY
         VIEWPOINT_Z = IVZ
+        LOOK_AT_X = LAX
+        LOOK_AT_Y = LAY
+        LOOK_AT_Z = LAZ
     if key == '\161': #q
         VIEWPOINT_X = VIEWPOINT_X + 0.2
-        print "VIEWPOINT_X =", VIEWPOINT_X
+        # print "VIEWPOINT_X =", VIEWPOINT_X
     if key == '\141': #a
         VIEWPOINT_X = VIEWPOINT_X - 0.2
-        print "VIEWPOINT_X =", VIEWPOINT_X
+        # print "VIEWPOINT_X =", VIEWPOINT_X
     #(W,S) = camara en Y
     if key == '\167': #w
         VIEWPOINT_Y = VIEWPOINT_Y + 0.2
-        print "VIEWPOINT_Y =", VIEWPOINT_Y
+        # print "VIEWPOINT_Y =", VIEWPOINT_Y
     if key == '\163': #s
         VIEWPOINT_Y = VIEWPOINT_Y - 0.2
-        print "VIEWPOINT_Y =", VIEWPOINT_Y
+        # print "VIEWPOINT_Y =", VIEWPOINT_Y
     #(E,D) = camara en Z
     if key == '\145': #e
         VIEWPOINT_Z = VIEWPOINT_Z + 0.2
-        print "VIEWPOINT_Z =", VIEWPOINT_Z
+        # print "VIEWPOINT_Z =", VIEWPOINT_Z
     if key == '\144': #d
         VIEWPOINT_Z = VIEWPOINT_Z - 0.2
-        print "VIEWPOINT_Z =", VIEWPOINT_Z
+        # print "VIEWPOINT_Z =", VIEWPOINT_Z
+    if key == '\165': #u
+        LOOK_AT_X = LOOK_AT_X + 0.2
+        # print "LOOK_AT_X =", LOOK_AT_X
+    if key == '\152': #j
+        LOOK_AT_X = LOOK_AT_X - 0.2
+        # print "LOOK_AT_X =", LOOK_AT_X
+    #(W,S) = camara en Y
+    if key == '\151': #i
+        LOOK_AT_Y = LOOK_AT_Y + 0.2
+        # print "LOOK_AT_Y =", LOOK_AT_Y
+    if key == '\153': #k
+        LOOK_AT_Y = LOOK_AT_Y - 0.2
+        # print "LOOK_AT_Y =", LOOK_AT_Y
+    #(E,D) = camara en Z
+    if key == '\157': #o
+        LOOK_AT_Z = LOOK_AT_Z + 0.2
+        # print "LOOK_AT_Z =", LOOK_AT_Z
+    if key == '\154': #l
+        LOOK_AT_Z = LOOK_AT_Z - 0.2
+        # print "LOOK_AT_Z =", LOOK_AT_Z
     # (+,-) intensidad de la luz
+    # if key == '\053':
+    #     INTENSITY = INTENSITY + 10
+    #     cambiarLuminosidad()
+    #     print "INTENSITY =",INTENSITY
+    # if key == '\055' and INTENSITY-10<INITINTEN:
+    #     INTENSITY = INTENSITY - 10
+    #     cambiarLuminosidad()
+    #     print "INTENSITY =",INTENSITY
     if key == '\053':
-        INTENSITY = INTENSITY + 10
-        cambiarLuminosidad()
-        print "INTENSITY =",INTENSITY
-    if key == '\055' and INTENSITY-10<INITINTEN:
-        INTENSITY = INTENSITY - 10
-        cambiarLuminosidad()
-        print "INTENSITY =",INTENSITY
-        
+        shoot()
+        print "SHOOT!"
+            
 
 def main(): #Nuestra funcion principal
     global windowId

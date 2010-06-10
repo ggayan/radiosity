@@ -6,15 +6,20 @@ IVX = 4
 IVY = 4
 IVZ = 4
 
+# objetivo de camara inicial
+LAX = 0
+LAY = 0
+LAZ = 0
+
 #el punto desde el cual miro
 VIEWPOINT_X = IVX
 VIEWPOINT_Y = IVY
 VIEWPOINT_Z = IVZ
 
 #el punto al cual miro
-LOOK_AT_X = 0
-LOOK_AT_Y = 0
-LOOK_AT_Z = 0
+LOOK_AT_X = LAX
+LOOK_AT_Y = LAY
+LOOK_AT_Z = LAZ
 
 #el vector que indica hacia donde es 'arriba' para la camara
 UP_VECTOR_X = 0
@@ -26,27 +31,27 @@ WIDTH = 800
 HEIGHT = 600
 
 #variables de los planos
-SECTIONS = 12 #numero de triangulos por columna de un plano
+SECTIONS = 1 #numero de triangulos por unidad de espacio
 
 # intensidad de fuentes luminosas
-INITINTEN = 300.0
+INITINTEN = 100.0
 INTENSITY = 1
 
 # variables de los planos
 size = 7.0
-step = size / SECTIONS
+step = 1 / SECTIONS
 
-XY_reflectance_red = 0.9
-XY_reflectance_green = 0.1
-XY_reflectance_blue = 0.1
+XY_reflectance_red = 0.3
+XY_reflectance_green = 0.3
+XY_reflectance_blue = 0.3
 
 XZ_reflectance_red = 0.1
-XZ_reflectance_green = 0.9
+XZ_reflectance_green = 0.6
 XZ_reflectance_blue = 0.1
 
 YZ_reflectance_red = 0.1
 YZ_reflectance_green = 0.1
-YZ_reflectance_blue = 0.9
+YZ_reflectance_blue = 0.6
 
 FormFactors = None
 Visibilidad = None
