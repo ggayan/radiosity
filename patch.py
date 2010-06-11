@@ -51,14 +51,15 @@ class Patch:
 
         lado1 = math.sqrt(math.pow(p1.x-p2.x,2)+math.pow(p1.y-p2.y,2)+math.pow(p1.z-p2.z,2)) #p1, p2
         lado2 = math.sqrt(math.pow(p3.x-p2.x,2)+math.pow(p3.y-p2.y,2)+math.pow(p3.z-p2.z,2)) #    p2, p3
-        lado3 = math.sqrt(math.pow(p1.x-p3.x,2)+math.pow(p1.y-p3.y,2)+math.pow(p1.z-p3.z,2)) #p1,     p3
-        lado4 = math.sqrt(math.pow(p3.x-p4.x,2)+math.pow(p3.y-p4.y,2)+math.pow(p3.z-p4.z,2)) #        p3, p4
-        lado5 = math.sqrt(math.pow(p1.x-p4.x,2)+math.pow(p1.y-p4.y,2)+math.pow(p1.z-p4.z,2)) #p1,         p4
+        # lado3 = math.sqrt(math.pow(p1.x-p3.x,2)+math.pow(p1.y-p3.y,2)+math.pow(p1.z-p3.z,2)) #p1,     p3
+        # lado4 = math.sqrt(math.pow(p3.x-p4.x,2)+math.pow(p3.y-p4.y,2)+math.pow(p3.z-p4.z,2)) #        p3, p4
+        # lado5 = math.sqrt(math.pow(p1.x-p4.x,2)+math.pow(p1.y-p4.y,2)+math.pow(p1.z-p4.z,2)) #p1,         p4
         
-        s1 = 0.5*(lado1 + lado2 + lado3)
-        s2 = 0.5*(lado4 + lado5 + lado3)
+        # s1 = 0.5*(lado1 + lado2 + lado3)
+        # s2 = 0.5*(lado4 + lado5 + lado3)
         
-        return math.sqrt(s1*(s1-lado1)*(s1-lado2)*(s1-lado3)) + math.sqrt(s2*(s2-lado4)*(s2-lado5)*(s2-lado3))
+        # return math.sqrt(s1*(s1-lado1)*(s1-lado2)*(s1-lado3)) + math.sqrt(s2*(s2-lado4)*(s2-lado5)*(s2-lado3))
+        return lado1*lado2
     
     #atajo para dibujar cada patch
     def draw(self):

@@ -1,61 +1,161 @@
 from punto import *
 from patch import *
+from variables import *
 
-def patchesCubo(vertices,secciones,lum, color):
-    puntos = [  Punto(tx+w* 0.005020 , ty+w* 0.005368 , tz+w*-0.467305),
-                 Punto(tx+w* 0.705485 , ty+w*-0.493011 , tz+w*-0.468423),
-                 Punto(tx+w*-0.695622 , ty+w*-0.492753 , tz+w*-0.468423),
-                 Punto(tx+w*-0.694644 , ty+w* 0.005368 , tz+w*-0.468423),
-                 Punto(tx+w*-0.694969 , ty+w* 0.507002 , tz+w*-0.468423),
-                 Punto(tx+w* 0.705485 , ty+w* 0.507689 , tz+w*-0.468423),
-                 Punto(tx+w* 0.704098 , ty+w*-0.492232 , tz+w* 0.426006),
-                 Punto(tx+w*-0.695445 , ty+w*-0.493011 , tz+w* 0.426006),
-                 Punto(tx+w*-0.695445 , ty+w* 0.507953 , tz+w* 0.426006),
-                 Punto(tx+w* 0.705082 , ty+w* 0.507099 , tz+w* 0.426006),
-                 Punto(tx+w* 0.704800 , ty+w* 0.005368 , tz+w* 0.426006),
-                 Punto(tx+w* 0.005020 , ty+w* 0.005368 , tz+w* 0.426360) ]
-    patches = [ Patch( puntos[2 ] , puntos[0 ], puntos[1 ]),
-                 Patch( puntos[1 ] , puntos[0 ], puntos[5 ]),
-                 Patch( puntos[3 ] , puntos[0 ], puntos[2 ]),
-                 Patch( puntos[4 ] , puntos[0 ], puntos[3 ]),
-                 Patch( puntos[5 ] , puntos[0 ], puntos[4 ]),
-                 Patch( puntos[1 ] , puntos[5 ], puntos[10]),
-                 Patch( puntos[2 ] , puntos[1 ], puntos[6 ]),
-                 Patch( puntos[3 ] , puntos[2 ], puntos[7 ]),
-                 Patch( puntos[4 ] , puntos[3 ], puntos[8 ]),
-                 Patch( puntos[5 ] , puntos[4 ], puntos[9 ]),
-                 Patch( puntos[10] , puntos[6 ], puntos[1 ]),
-                 Patch( puntos[6 ] , puntos[7 ], puntos[2 ]),
-                 Patch( puntos[7 ] , puntos[8 ], puntos[3 ]),
-                 Patch( puntos[8 ] , puntos[9 ], puntos[4 ]),
-                 Patch( puntos[9 ] , puntos[10], puntos[5 ]),
-                 Patch( puntos[6 ] , puntos[10], puntos[11]),
-                 Patch( puntos[7 ] , puntos[6 ], puntos[11]),
-                 Patch( puntos[8 ] , puntos[7 ], puntos[11]),
-                 Patch( puntos[9 ] , puntos[8 ], puntos[11]),
-                 Patch( puntos[10] , puntos[9 ], puntos[11]) ]
-                 
-    for patch in patches:
-        patch.reflectance_red = color[0]
-        patch.reflectance_green = color[1]
-        patch.reflectance_blue = color[2]
-        
-        patch.emmision_red = lum
-        patch.emmision_green = lum
-        patch.emmision_blue = lum
-        
-        centro = Punto(tx,ty,tz)
-        vec_cen_pat = patch.center.resta(centro,1)
-        vec_norm = patch.normal
-        theta = vec_norm.anguloEntre(vec_norm)
-        if( abs(theta) > math.pi/2):
-            patch.normal.x *= -1
-            patch.normal.y *= -1
-            patch.normal.z *= -1
-            
-        #patch.normal = (patch.center.resta(Punto(tx,ty,tz),1)).normalizar()
+def patchesCubo(origin,lengthx,lengthy,lengthz,lum,color):
     
-    return patches
+    patchesCubo = []
+    
+    iterationsx = (int)(SECTIONS*lengthx)
+    iterationsy = (int)(SECTIONS*lengthy)
+    iterationsz = (int)(SECTIONS*lengthz)
+    
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsx): #eje horizonal
+        for j in range(0, iterationsy): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto(x0, y0, z0)
+            p2 = Punto(x0 + step, y0, z0)
+            p3 = Punto(x0, y0 + step, z0)
+            p4 = Punto(x0 + step, y0 + step, z0)
+            patch = Patch(p3, p4, p2, p1)
+            y0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        x0 += step
+        y0 = origin.y
+    #planoXZ
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsx): #eje horizonal
+        for j in range(0, iterationsz): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto(x0, y0, z0)
+            p2 = Punto(x0, y0, z0 + step)
+            p3 = Punto(x0 + step, y0, z0)
+            p4 = Punto(x0 + step, y0, z0 + step)
+            patch = Patch(p3, p4, p2, p1)
+            z0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        x0 += step
+        z0 = origin.z
+        
+    #planoYZ
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsz): #eje horizonal
+        for j in range(0, iterationsy): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto( x0, y0, z0)
+            p2 = Punto( x0, y0 + step, z0)
+            p3 = Punto( x0, y0, z0 + step)
+            p4 = Punto( x0, y0 + step, z0 + step)
+            patch = Patch(p3, p4, p2, p1)
+            y0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        z0 += step
+        y0 = origin.y
+        ############################################################
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsx): #eje horizonal
+        for j in range(0, iterationsy): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto(x0, y0, z0+lengthz)
+            p2 = Punto(x0 + step, y0, z0+lengthz)
+            p3 = Punto(x0, y0 + step, z0+lengthz)
+            p4 = Punto(x0 + step, y0 + step, z0+lengthz)
+            patch = Patch(p1, p2, p4, p3)
+            y0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        x0 += step
+        y0 = origin.y
+    #planoXZ
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsx): #eje horizonal
+        for j in range(0, iterationsz): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto(x0, y0+lengthy, z0)
+            p2 = Punto(x0, y0+lengthy, z0 + step)
+            p3 = Punto(x0 + step, y0+lengthy, z0)
+            p4 = Punto(x0 + step, y0+lengthy, z0 + step)
+            patch = Patch(p1, p2, p4, p3)
+            z0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        x0 += step
+        z0 = origin.z
+        
+    #planoYZ
+    x0 = origin.x
+    y0 = origin.y
+    z0 = origin.z
+    
+    for i in range(0, iterationsz): #eje horizonal
+        for j in range(0, iterationsy): #eje vertical
+            
+            patch = None # variable temporal para cada patch
+            
+            p1 = Punto( x0+lengthx, y0, z0)
+            p2 = Punto( x0+lengthx, y0 + step, z0)
+            p3 = Punto( x0+lengthx, y0, z0 + step)
+            p4 = Punto( x0+lengthx, y0 + step, z0 + step)
+            patch = Patch(p1, p2, p4, p3)
+            y0 += step
+                
+            patch.reflectance_red = color[0]
+            patch.reflectance_green = color[1]
+            patch.reflectance_blue = color[2]
+            # asocio el parche recien creado a la lista
+            patchesCubo.append(patch)
+        z0 += step
+        y0 = origin.y
+	return patchesCubo
     
 def uvsphere(tx,ty,tz,w,lum, color):
     puntos = [   Punto( tx+w*0.309017  , ty+w*0.000000  , tz+w*0.951057  ),

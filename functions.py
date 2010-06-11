@@ -80,8 +80,8 @@ def visibility(i,j):
     #        RETURN 0
         if( d < ddm ):
             return 0
-        elif(d < dd):
-            rvalue = 0.5
+        # elif(d < dd):
+        #     rvalue = 0.5
         # FIN DEL LOOP
     
     #  RETURN 1

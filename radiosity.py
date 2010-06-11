@@ -179,8 +179,9 @@ def generarPlanos():
 # funcion que llama a los metodos de cuerpos.py
 def generarCuerpos():
     global patchesList
-    patchesList.extend( uvsphere(2 , 3 , 1.5 , 0.4, 0, [0.9,0.5,0.5]) )
-    patchesList.extend( uvsphere(4 , 2 , 1.5 , 0.5, 0, [0.9,0.5,0.5]) )
+    patchesList.extend( patchesCubo( Punto(2,1,2),2,3,1,0,[0.8,0.2,0.2]) )
+    # patchesList.extend( uvsphere(2 , 3 , 1.5 , 0.4, 0, [0.9,0.5,0.5]) )
+    # patchesList.extend( uvsphere(4 , 2 , 1.5 , 0.5, 0, [0.9,0.5,0.5]) )
     # patchesList.extend( patchesIcosaedro_2(2 , 3 , 1.5 , 0.4, 0, [0.8,0.5,0.5]) )
     # patchesList.extend( patchesIcosaedro_2(2 , 2 , 4   , 0.4, 0, [0.5,0.8,0.4]) )
     # patchesList.extend( patchesIcosaedro_2(2 , 1 , 1   , 0.4, 0, [0.8,0.8,0.8]) )
@@ -191,7 +192,7 @@ def aniadirFuentesLuminosas():
     global lightsList
     
     # fuente1 = Patch(Punto(5.0,4.0,4.0),Punto(4.0,5.0,4.0),Punto(4.0,4.0,5.0))
-    fuente1 = Patch(Punto(5.5,4.0,7.0),Punto(5.5,4.5,7.0),Punto(5.0,4.5,7.0),Punto(5.0,4.0,7.0))
+    fuente1 = Patch(Punto(5.5,4.0,8.0),Punto(5.5,4.5,8.0),Punto(5.0,4.5,8.0),Punto(5.0,4.0,8.0))
     # fuente2 = Patch(Punto(4.0,2.2,2.1),Punto(3.8,2.6,2.2),Punto(3.9,2.4,2.4))
     
     # bloqueo1 = Patch(Punto(2.0,2.0,2.0),Punto(2.0,2.0,1.5),Punto(2.5,1.5,2.0))
