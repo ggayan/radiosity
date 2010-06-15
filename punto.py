@@ -25,7 +25,10 @@ class Punto:
         x = (self.x - p2.x) / w
         y = (self.y - p2.y) / w
         z = (self.z - p2.z) / w
-        return Punto(x, y, z)
+        pt = Punto(x, y, z)
+        # if( pt.modulo() == 0):
+        #     print "la resta es cero ",pt.x,"--",pt.y,"--",pt.z
+        return pt
         
     def cruz(self, p2):
         #calculo los puntos segun la notacion matricial
@@ -41,12 +44,13 @@ class Punto:
         sy = self.y*p2.y
         sz = self.z*p2.z
         
-        return sx+sy+sz
+        return (float)(sx+sy+sz)
         
     # modulo de Punto, como si fuera un vector
     def modulo(self):
         aux = math.sqrt(self.producto(self))
-        # print aux
+        # if(aux == 0):
+            # print "modulo es cero  ",self.x,"--",self.y,"--",self.z
         return aux
     
     def imprimir(self, name):
@@ -62,9 +66,9 @@ class Punto:
         w = p2
         acosval = (v.producto(w))/(v.modulo()*w.modulo())
         if( acosval < -1):
-            acosval = -1
+            acosval = -1.0
         if( acosval > 1 ):
-            acosval = 1
+            acosval = 1.0
         theta = math.acos(acosval)
         return theta
     
