@@ -37,9 +37,6 @@ def init(width, height):
     # Visibilidad = [[-1 for col in range(len(patchesList))] for row in range(len(patchesList))]
     FormFactors = [[-1]*len(patchesList) for row in range(len(patchesList))]
     Visibilidad = [[-1]*len(patchesList) for row in range(len(patchesList))]
-    # FormFactors = [[-1]*len(patchesList)]*len(patchesList)
-    # Visibilidad = [[-1]*len(patchesList)]*len(patchesList)
-
         
     print strftime("%a, %d %b %Y %H:%M:%S ", gmtime(time.time()-3600*4))
     if( VSB == 1):
@@ -58,6 +55,7 @@ def init(width, height):
     print "OK FormFactors"
     print "Ejecutar ",shoots," iteraciones"
     RadiosityIteration(shoots)
+
     print "segundos= ",time.time()-ITIME
     print strftime("%a, %d %b %Y %H:%M:%S", gmtime(time.time()-3600*4))
 
@@ -203,12 +201,6 @@ def generarCuerpos():
     patchesList.extend( patchesCubo( Punto(4,1,4) , 2.0 , 2.0 , 1.0 , 0.0 , [0.7,0.1,0.1]) )
     patchesList.extend( patchesCubo( Punto(1,0,1) , 1.0 , 1.0 , 1.0 , 0.0 , [0.7,0.7,0.1]) )
     # patchesList.extend( patchesCubo( Punto(4,1,4),2,2,1,0,[0.8,0.2,0.2]) )
-    # patchesList.extend( uvsphere(2 , 3 , 1.5 , 0.4, 0, [0.9,0.5,0.5]) )
-    # patchesList.extend( uvsphere(4 , 2 , 1.5 , 0.5, 0, [0.9,0.5,0.5]) )
-    # patchesList.extend( patchesIcosaedro_2(2 , 3 , 1.5 , 0.4, 0, [0.8,0.5,0.5]) )
-    # patchesList.extend( patchesIcosaedro_2(2 , 2 , 4   , 0.4, 0, [0.5,0.8,0.4]) )
-    # patchesList.extend( patchesIcosaedro_2(2 , 1 , 1   , 0.4, 0, [0.8,0.8,0.8]) )
-    # patchesList.extend( patchesCubo(2 , 1 , 1 , 0.4, 0) )
 
 def aniadirFuentesLuminosas():
     global patchesList

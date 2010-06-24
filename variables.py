@@ -11,6 +11,11 @@ LAX = 0
 LAY = 0
 LAZ = 0
 
+# objetivo de camara inicial
+LAX = 0
+LAY = 0
+LAZ = 0
+
 #el punto desde el cual miro
 VIEWPOINT_X = IVX
 VIEWPOINT_Y = IVY
