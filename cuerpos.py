@@ -159,6 +159,8 @@ def patchesCubo(origin,lengthx,lengthy,lengthz,lum,color):
         z0 += step
         y0 = origin.y
         
+    for patch in patchesCubo:
+    	patch.oclussion = True
 	return patchesCubo
     
 def uvsphere(tx,ty,tz,w,lum, color):

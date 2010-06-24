@@ -8,6 +8,8 @@ import sys
 import math
 import time
 
+from time import gmtime, strftime
+
 from patch import *
 from punto import *
 from functions import *
@@ -38,12 +40,8 @@ def init(width, height):
     # FormFactors = [[-1]*len(patchesList)]*len(patchesList)
     # Visibilidad = [[-1]*len(patchesList)]*len(patchesList)
 
-    # 0 = cargar
-    # 1 = calcular
-    VSB = 1
-    FFT = 0
-    shoots = 30
-    
+        
+    print strftime("%a, %d %b %Y %H:%M:%S ", gmtime(time.time()-3600*4))
     if( VSB == 1):
         print "Computar Visibilidades"
         computeVisibilidad()
@@ -61,6 +59,8 @@ def init(width, height):
     print "Ejecutar ",shoots," iteraciones"
     RadiosityIteration(shoots)
     print "segundos= ",time.time()-ITIME
+    print strftime("%a, %d %b %Y %H:%M:%S", gmtime(time.time()-3600*4))
+
     
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
@@ -200,8 +200,8 @@ def generarPlanos():
 # funcion que llama a los metodos de cuerpos.py
 def generarCuerpos():
     global patchesList
-    patchesList.extend( patchesCubo( Punto(4,1,4) , 2.0 , 2.0 , 1.0 , 0.0 , [0.2,0.1,0.1]) )
-    patchesList.extend( patchesCubo( Punto(1,0,1) , 1.0 , 1.0 , 1.0 , 0.0 , [0.15,0.15,0.1]) )
+    patchesList.extend( patchesCubo( Punto(4,1,4) , 2.0 , 2.0 , 1.0 , 0.0 , [0.7,0.1,0.1]) )
+    patchesList.extend( patchesCubo( Punto(1,0,1) , 1.0 , 1.0 , 1.0 , 0.0 , [0.7,0.7,0.1]) )
     # patchesList.extend( patchesCubo( Punto(4,1,4),2,2,1,0,[0.8,0.2,0.2]) )
     # patchesList.extend( uvsphere(2 , 3 , 1.5 , 0.4, 0, [0.9,0.5,0.5]) )
     # patchesList.extend( uvsphere(4 , 2 , 1.5 , 0.5, 0, [0.9,0.5,0.5]) )
@@ -250,7 +250,7 @@ def computeVisibilidad():
                 Visibilidad[x][y] = 1.0
             else:
                 # Visibilidad[x][y] = visibility(x,y)
-                Visibilidad[x][y] = visibility(x,y)
+                Visibilidad[x][y] = visibility3(x,y)
     cPickle.dump(Visibilidad, open('visibilidad.dat', 'wb')) 
 
 def getVisibilidad(i,j):

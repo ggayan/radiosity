@@ -1,5 +1,6 @@
 from OpenGL.GL import glVertex3f
 import math
+from variables import *
 
 #implementado como triangulo
 class Patch:
@@ -32,6 +33,7 @@ class Patch:
         self.area = self._area()
         self.pradio = self._pradio()
         self.pmradio = self._pmradio()
+        self.oclussion = False
         
     #retorna el baricentro del parche
     def _center(self):
@@ -77,11 +79,12 @@ class Patch:
         
     # retorna el radio de la circunferencia circunscrita
     def _pradio(self):
-        d1 = self.center.resta(self.p1,1).modulo()
-        d2 = self.center.resta(self.p2,1).modulo()
-        d3 = self.center.resta(self.p3,1).modulo()
-        d4 = self.center.resta(self.p4,1).modulo()
-        return max(d1,d2,d3,d4)
+        # d1 = self.center.resta(self.p1,1).modulo()
+        # d2 = self.center.resta(self.p2,1).modulo()
+        # d3 = self.center.resta(self.p3,1).modulo()
+        # d4 = self.center.resta(self.p4,1).modulo()
+        # return max(d1,d2,d3,d4)
+        return (1/SECTIONS)*0.5*(2**0.5)
         
     # retorna el radio de la circunferencia inscrita
     def _pmradio(self):
@@ -89,6 +92,6 @@ class Patch:
         d2 = self.center.resta(self.p2,1).modulo()
         d3 = self.center.resta(self.p3,1).modulo()
         d4 = self.center.resta(self.p4,1).modulo()
-        return min(d1,d2,d3,d4)
+        return max(d1,d2,d3,d4)*0.5*(2**0.5)
     
     

@@ -53,6 +53,8 @@ def sistema(a,b):
     return x
  
 def visibility(i,j) :
+    if(i==j):
+        return 1
     p_i = patchesList[i]
     p_j = patchesList[j]
     
@@ -71,6 +73,8 @@ def visibility(i,j) :
     for x, p in enumerate(patchesList):
         if(x == i or x == j):
             continue
+        if(not p.oclussion):
+            continue
         cp = p.center
         
         l = cp.x
@@ -85,7 +89,7 @@ def visibility(i,j) :
         det = b**2 - 4*a*c
         if(det <= 0):
             return 1.0
-        return 0.0
+    return 0.0
         
 def visibility2(i,j) :
     p_i = patchesList[i]
@@ -166,43 +170,48 @@ def visibility2(i,j) :
     return 1.0
         
 # recibe dos parches, y determina el factor de visibilidad entre los centros de ambos (valor 0 o 1)
-# def visibility(i,j):
-#     if(i==j):
-#         return 1
+def visibility3(i,j):
+    if(i==j):
+        return 1
     
-#     p_i = patchesList[i]
-#     p_j = patchesList[j]
-#     rvalue = 1
-#     ci = p_i.center
-#     cj = p_j.center
+    p_i = patchesList[i]
+    p_j = patchesList[j]
+    rvalue = 1
+    ci = p_i.center
+    cj = p_j.center
     
-#     #  PARA CADA PARCHE P EN LA ESCENA
-#     for p in patchesList:
-#         cp = p.center
-#     #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
-#         v = cp.resta(ci,1)
-#         w = cj.resta(ci,1)
-#         if( v.modulo() == 0 or w.modulo() == 0):
-#             return 1
-#         theta = v.anguloEntre(w)
-#     #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
-#         d = math.sin(theta) * v.modulo()
-#     #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
-#         dm = p.pradio
-#         dmm = p.pmradio
-#     #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
-#         alpha = p.normal.anguloEntre(w)
-#     #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
-#         dd = dm*math.cos(alpha)
-#         ddm = dmm*math.cos(alpha)
-#     #     SI D < DD => RECTA ATRAVIESA PARCHE
-#     #        RETURN 0
-#         if( d < ddm ):
-#             return 0
-#         # elif(d < dd):
-#         #     rvalue = 0.5
-#         # FIN DEL LOOP
+    #  PARA CADA PARCHE P EN LA ESCENA
+    for x,p in enumerate(patchesList):
+        if(x == i or x == j):
+            continue
+        if(not p.oclussion):
+            continue
+        cp = p.center
+    #     CALCULAR ANGULO THETA ENTRE VECTORES PI,PJ Y PI,CP
+        v = cp.resta(ci,1)
+        w = cj.resta(ci,1)
+        if( v.modulo() == 0 or w.modulo() == 0):
+            return 1
+        theta = v.anguloEntre(w)
+    #     CALCULAR DISTANCIA COMO (CP-PI)SEN THETA
+        d = math.sin(theta) * v.modulo()
+    #     CALCULAR MAYOR DISTANCIA ENTRE UN VERTICE DE P Y EL CENTRO DE P (DIS_MAX = DM)
+        dm = p.pradio
+        dmm = p.pmradio
+    #     CALCULAR ANGULO ENTRE NORMAL DE P Y R, ANGULO = TH
+        alpha = p.normal.anguloEntre(w)
+    #     CALCULAR DD = DM*COS(TH) -> 'CUANTO SE ACERCA P A R'
+        dd = dm*math.cos(alpha)
+        # ddm = dmm*math.cos(alpha)
+    #     SI D < DD => RECTA ATRAVIESA PARCHE
+    #        RETURN 0
+        # if( d < ddm ):
+        #     return 0.1
+        # elif(d < dd):
+        #     rvalue = 0.7
+        if( d < dd):
+            return 0.1
+        # FIN DEL LOOP
     
-#     #  RETURN 1
-#     return rvalue
-
+    #  RETURN 1
+    return rvalue
