@@ -3,7 +3,9 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from numpy import *
 
+import Image
 import cPickle
+import os
 import sys
 import math
 import time
@@ -59,13 +61,16 @@ def init(width, height):
     print "segundos= ",time.time()-ITIME
     print strftime("%a, %d %b %Y %H:%M:%S", gmtime(time.time()-3600*4))
 
-    
+    LoadTextures()
+    glEnable(GL_TEXTURE_2D) 
     glClearColor(0.0, 0.0, 0.0, 0.0)    # Color negro, sin transparencia
     
     glClearDepth(1.0)                   # Enables Clearing Of The Depth Buffer
+    glDepthRange(0.0, 0.85)
     glDepthFunc(GL_LESS)                # The Type Of Depth Test To Do
     glEnable(GL_DEPTH_TEST)             # Enables Depth Testing
     glShadeModel(GL_SMOOTH)             # Enables Smooth Color Shading
+    glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE )
     
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()                    # Reset The Projection Matrix
@@ -99,7 +104,7 @@ def DrawGLScene():
               UP_VECTOR_X, UP_VECTOR_Y, UP_VECTOR_Z)
     
     #dibujo los ejes
-    axis()
+    #axis()
     
     #dibujo el escenario
     escenario()
@@ -271,15 +276,15 @@ def getFormFactor(i,j):
 def RadiosityIteration(iterations):
     for x in xrange(0,iterations):
         print "iteration ",x
-        shoot()
-        # collect()
+        #shoot()
+        collect()
         
 def shoot():
     for index_x, patch_1 in enumerate(patchesList):
         for index_y, patch_2 in enumerate(patchesList):
             if( index_x == index_y):
                 continue
-            ff = 0.3*getFormFactor(index_x, index_y)
+            ff = getFormFactor(index_x, index_y)
             if(ff==0):
                 continue
             patch_2.incident_red += patch_1.excident_red * ff
@@ -291,7 +296,6 @@ def shoot():
         patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
         patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
     
-                    
 def collect():
     for index_x, patch_1 in enumerate(patchesList):
         aux_r = 0
@@ -312,7 +316,10 @@ def collect():
     for patch in patchesList:
         patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
         patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
-        patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
+        patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue
+        
+def calc_incident_light(patch):
+    total_light = 0.0
 
 def dibujarListaParches():
     for patch in patchesList:
@@ -403,10 +410,33 @@ def keyPressed(*args): #Presionar una tecla
         LOOK_AT_Z = LOOK_AT_Z - speed
         # print "LOOK_AT_Z =", LOOK_AT_Z
     if key == '\053':
-        shoot()
-        # collect()
-        print "SHOOT!"
-            
+        #shoot()
+        collect()
+        #print "SHOOT!"
+        print "COLLECT!"
+
+def LoadTextures():
+    #global texture
+    image = Image.open("texture.jpg")
+    
+    ix = image.size[0]
+    iy = image.size[1]
+    image = image.tostring("raw", "RGBX", 0, -1)
+    
+    # Create Texture    
+    # There does not seem to be support for this call or the version of PyOGL I have is broken.
+    #glGenTextures(1, texture)
+    #glBindTexture(GL_TEXTURE_2D, texture)   # 2d texture (x and y size)
+    
+    glPixelStorei(GL_UNPACK_ALIGNMENT,1)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, image)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
 def main(): #Nuestra funcion principal
     global windowId
