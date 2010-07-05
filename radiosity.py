@@ -235,6 +235,14 @@ def cambiarLuminosidad():
         light.emmision_green = INITINTEN+INTENSITY  #emisividad verde
         light.emmision_blue = INITINTEN+INTENSITY  #emisividad azul
   
+        light.incident_red = INITINTEN+INTENSITY  #emisividad roja
+        light.incident_green = INITINTEN+INTENSITY  #emisividad verde
+        light.incident_blue = INITINTEN+INTENSITY  #emisividad azul
+        
+        # light.d_inc_red = INITINTEN+INTENSITY  #emisividad roja
+        # light.d_inc_green = INITINTEN+INTENSITY  #emisividad verde
+        # light.d_inc_blue = INITINTEN+INTENSITY  #emisividad azul
+        
 def loadVisibilidad():
     global Visibilidad
     Visibilidad = cPickle.load(open('visibilidad.dat', 'rb'))
@@ -277,7 +285,8 @@ def RadiosityIteration(iterations):
     for x in xrange(0,iterations):
         print "iteration ",x
         #shoot()
-        collect()
+        shoot2()
+        #collect()
         
 def shoot():
     for index_x, patch_1 in enumerate(patchesList):
@@ -295,6 +304,36 @@ def shoot():
         patch.excident_red = patch.emmision_red + patch.incident_red * patch.reflectance_red
         patch.excident_green = patch.emmision_green + patch.incident_green * patch.reflectance_green
         patch.excident_blue = patch.emmision_blue + patch.incident_blue * patch.reflectance_blue 
+
+def shoot2():
+    for index_x, patch_1 in enumerate(patchesList):
+        for index_y, patch_2 in enumerate(patchesList):
+            if( index_x == index_y):
+                continue
+            ff = getFormFactor(index_x, index_y)
+            if(ff==0):
+                continue
+            drad_red   = patch_1.reflectance_red * ff * patch_1.d_inc_red
+            drad_green = patch_1.reflectance_green * ff * patch_1.d_inc_green
+            drad_blue  = patch_1.reflectance_blue * ff * patch_1.d_inc_blue
+            
+            patch_2.d_inc_red   += drad_red
+            patch_2.d_inc_green += drad_green
+            patch_2.d_inc_blue  += drad_blue
+            
+            patch_2.incident_red   += drad_red
+            patch_2.incident_green += drad_green
+            patch_2.incident_blue  += drad_blue
+        
+        patch_1.d_inc_red   = 0
+        patch_1.d_inc_green = 0
+        patch_1.d_inc_blue  = 0
+        
+        # calculo de luz excedente (color) de cada parche
+    for patch in patchesList:
+        patch.excident_red   = patch_2.incident_red
+        patch.excident_green = patch_2.incident_green
+        patch.excident_blue  = patch_2.incident_blue
     
 def collect():
     for index_x, patch_1 in enumerate(patchesList):

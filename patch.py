@@ -21,6 +21,10 @@ class Patch:
     incident_red = 0.0  # luz incidente roja
     incident_green = 0.0  # luz incidente verde
     incident_blue = 0.0  # luz incidente azul
+    
+    d_inc_red = 0.0  # delta incidente roja
+    d_inc_green = 0.0  # delta incidente verde
+    d_inc_blue = 0.0  # delta incidente azul
 
     #los puntos del parche deben especificarse en orden (antihorario=>normal +).
     #en teoria debieran ser coplanares

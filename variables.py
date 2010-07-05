@@ -41,7 +41,7 @@ SECTIONS = 2.0 #numero de parches por unidad de espacio
 # 1 = calcular
 VSB = 0
 FFT = 0
-shoots = 2
+shoots = 10
 
 # intensidad de fuentes luminosas
 INITINTEN = 500.0
